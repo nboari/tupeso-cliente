@@ -1,0 +1,178 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/google-chart/google-chart.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view-historia">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 5px;
+      }
+
+      google-chart {
+        height: 300px;
+        width: 100%;
+      }
+
+      paper-fab {
+        position: fixed;
+        right: 25px;
+        bottom: 30px;
+      }
+
+      paper-fab {
+        display: block;
+        float: right;
+      }
+
+      .item {
+        padding: 10px;
+        text-align: center;        
+      }
+
+      paper-button {
+        display: block;
+        float: right;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-right: 0px;
+      }
+
+      paper-button.indigo {
+        background-color: var(--paper-indigo-500);
+        color: white;
+        --paper-button-raised-keyboard-focus: {
+          background-color: var(--paper-pink-a200) !important;
+          color: white !important;
+        }
+      }
+
+      paper-button.indigo:hover {
+        background-color: var(--paper-indigo-400);
+      }
+
+      h1 {
+        text-align: center;        
+      }
+    </style>
+    <div class="card">
+      <h1>Evolucion del peso</h1>
+      <google-chart id='googleChart' type='line' options='{"legend":"none"}' cols='[{"label":"Fecha", "type":"string"}, {"label":"Dias", "type":"number"}]'
+        rows=[[arrayPesoChart]]>
+      </google-chart>
+    </div>
+    <div class="card">
+      <h1>Lista de ultimos pesajes</h1>
+      <iron-list id="lista" items="[]" as="item" scroll-target="document" scroll-offset="200">
+        <template>
+          <div class="item">[[item.fecha]] : [[item.peso]] kg</div>
+        </template>
+      </iron-list>
+    </div>
+    <paper-dialog id="papperDialog">
+      <h2>Nuevo Pesaje</h2>
+      <iron-form id="formPeso">
+        <form action="/foo" method="get">
+          <paper-input autofocus id="peso" name="peso" label="Peso" value="" required></paper-input>
+          <paper-button class="indigo" raised on-click="submitForm">Enviar</paper-button>
+          <paper-button class="indigo" raised on-click="resetForm">Limpiar</paper-button>
+        </form>
+      </iron-form>
+    </paper-dialog>
+    <div>
+      <paper-fab id="fab" icon="add" on-click="openDialog"></paper-fab>
+    </div>
+    <iron-ajax id="AjaxGet" url="https://tupeso-server.herokuapp.com/api/pesos" on-response="handleAjaxGetResponse"
+      on-error="handleAjaxGetError" auto>
+    </iron-ajax>
+    <iron-ajax id="AjaxGetDesc" url="https://tupeso-server.herokuapp.com/api/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" on-response="handleAjaxGetDescResponse"
+      on-error="handleAjaxGetDescError" auto>
+    </iron-ajax>
+    <iron-ajax id="AjaxPost" method="post" url="https://tupeso-server.herokuapp.com/api/pesos" handle-as="json" content-type="application/json"
+      on-response="handleAjaxPostResponse" on-error="handleAjaxPostError" />
+    </iron-ajax>
+    <iron-resizable-behavior></iron-resizable-behavior>
+  </template>
+
+  <script>
+    class MyViewHistoria extends Polymer.mixinBehaviors(Polymer.IronResizableBehavior, Polymer.Element) {
+      static get is() { return 'my-view-historia'; }
+      static get properties() {
+        return {
+          arrayPesoChart: {
+            type: Array
+          }
+        }
+      }
+      connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener('iron-resize', e => this.$.googleChart.redraw());
+      }
+      submitForm() {
+        this.$.AjaxPost.body = { "peso": this.$.peso.value, "fecha": Date() };
+        this.$.AjaxPost.generateRequest();
+        this.$.papperDialog.close();
+        this.resetForm();
+      }
+      resetForm() {
+        this.$.peso.value = "";
+      }
+      handleAjaxPostResponse(data) {
+        console.log("reshandleAjaxPostResponse");
+        this.$.AjaxGet.generateRequest();
+        this.$.AjaxGetDesc.generateRequest();
+      }
+      handleAjaxPostError() {
+        console.log("handleAjaxPostError");
+      }
+      handleAjaxGetResponse(data) {
+        var response = data.detail.response;
+        var arrayPesoChart = [];
+        response.forEach(function (element) {
+          var fechaFromateada = new Date(element.fecha).toLocaleString();
+          arrayPesoChart.push([fechaFromateada, element.peso]);
+        });
+        this.set('arrayPesoChart', arrayPesoChart);
+      }
+      handleAjaxGetError() {
+        console.log("handleAjaxGetError");
+      }
+      handleAjaxGetDescResponse(data) {
+        var response = data.detail.response;
+        var arrayPesoList = [];
+        response.forEach(function (element) {
+          var fechaFromateada = new Date(element.fecha).toLocaleString();
+          arrayPesoList.push({ "id": element.id, "peso": element.peso, "fecha": fechaFromateada })
+        });
+        this.$.lista.items = arrayPesoList;
+      }
+      handleAjaxGetDescError() {
+        console.log("handleAjaxGetDescError");
+      }
+      openDialog() {
+        this.$.papperDialog.open();
+      }
+    };
+    customElements.define(MyViewHistoria.is, MyViewHistoria);   
+  </script>
+</dom-module>
