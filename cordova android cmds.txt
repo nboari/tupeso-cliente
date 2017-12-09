@@ -1,0 +1,1 @@
+rm android -r && cordova create android com.nbormi.tupeso "Tu peso" && cd android && rm www/* -r && cp ../es5-bundled/* www/ -r && cordova platforms add android && cordova run android

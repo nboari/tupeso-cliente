@@ -22,8 +22,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="my-icons.html">
 
-<link rel="lazy-import" href="my-view-historia.html">
-<link rel="lazy-import" href="my-view-404.html">
+<link rel="import" href="my-view-historia.html">
+<link rel="import" href="my-view-404.html">
 
 <dom-module id="my-app">
   <template>
@@ -101,7 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <iron-pages
             selected="[[page]]"
             attr-for-selected="name"
-            fallback-selection="page404"
+            fallback-selection="historia"
             role="main">
           <my-view-historia name="historia"></my-view-historia>
           <my-view-404 name="page404"></my-view-404>
