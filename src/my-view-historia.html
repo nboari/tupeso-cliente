@@ -93,7 +93,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <h2>Nuevo Pesaje</h2>
       <iron-form id="formPeso">
         <form action="/foo" method="get">
-          <paper-input autofocus id="peso" name="peso" label="Peso" value="" required></paper-input>
+          <paper-input autofocus id="peso" name="peso" label="Peso" value="" auto-validate allowed-pattern="[0-9.]" required></paper-input>
           <paper-button class="indigo" raised on-click="submitForm">Enviar</paper-button>
           <paper-button class="indigo" raised on-click="resetForm">Limpiar</paper-button>
         </form>
