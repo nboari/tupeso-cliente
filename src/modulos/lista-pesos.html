@@ -1,0 +1,31 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="lista-pesos">
+
+    <template>
+        <template is="dom-repeat" items="[[pesos]]">
+            [[item.fecha]] : [[item.peso]]
+        </template>
+    </template>
+
+    <script>
+        class ListaPesos extends Polymer.Element {
+            static get is() { return 'lista-pesos' }
+            static get properties() {
+                return {
+                    pesos: Array
+                }
+            }
+            addPeso(peso) {
+                console.log("Entro en AddPeso con: " + peso.id);
+                this.push('pesos', peso);
+            }
+
+            removePeso(peso) {
+                var index = this.users.indexOf(user);
+                this.splice('pesos', index, 1);
+            }
+        }
+        customElements.define(ListaPesos.is, ListaPesos);
+    </script>
+</dom-module>

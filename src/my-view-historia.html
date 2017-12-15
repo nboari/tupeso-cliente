@@ -19,6 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="modulos/lista-pesos.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view-historia">
@@ -83,11 +84,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
     <div class="card">
       <h1>Lista de ultimos pesajes</h1>
-      <iron-list id="lista" items="[]" as="item" scroll-target="document" scroll-offset="200">
-        <template>
-          <div class="item">[[item.fecha]] : [[item.peso]] kg</div>
-        </template>
-      </iron-list>
+      <lista-pesos 
+        id="listaPesos" 
+        pesos="[]">
+      </lista-pesos>      
     </div>
     <paper-dialog id="papperDialog">
       <h2>Nuevo Pesaje</h2>
@@ -159,12 +159,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       handleAjaxGetDescResponse(data) {
         var response = data.detail.response;
-        var arrayPesoList = [];
+        var lista = this.$.listaPesos;
         response.forEach(function (element) {
           var fechaFromateada = new Date(element.fecha).toLocaleString();
-          arrayPesoList.push({ "id": element.id, "peso": element.peso, "fecha": fechaFromateada })
+          lista.addPeso({ 
+             "id": element.id, 
+             "peso": element.peso, 
+             "fecha": fechaFromateada 
+            })
         });
-        this.$.lista.items = arrayPesoList;
+        console.log(lista.pesos);
       }
       handleAjaxGetDescError() {
         console.log("handleAjaxGetDescError");
