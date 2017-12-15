@@ -1,0 +1,178 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/global-variable/global-variable.html">
+<link rel="import" href="../bower_components/global-variable/global-data.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view-signup">
+    <template>
+        <style include="shared-styles">
+             :host {
+                display: block;
+                padding: 10px;
+            }
+
+            a,
+            .card {
+                text-decoration-line: none;
+            }
+
+            h1 {
+                font-size: 1em;
+            }
+
+            h3 {
+                font-size: 0.8em;
+            }
+
+            .card>* {
+                margin: 0px;
+            }
+
+            paper-input {
+                max-width: 400px;
+                margin: auto;
+            }
+
+            paper-button {
+                font-family: 'Roboto', 'Noto', sans-serif;
+                font-weight: normal;
+                font-size: 14px;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                }
+                ;
+            }
+
+            paper-button.indigo:hover {
+                background-color: var(--paper-indigo-400);
+            }
+
+            paper-button.green {
+                background-color: var(--paper-green-500);
+                color: white;
+            }
+
+            paper-button.green[active] {
+                background-color: var(--paper-red-500);
+            }
+
+            paper-button.disabled {
+                color: white;
+            }
+        </style>
+        <global-variable key="user" 
+            value="{{user1}}">
+        </global-variable>
+        
+        <global-data id="globalData"
+            on-set="_onSet"
+            on-subscribe="_onSubscribe"
+            on-unsubscribe="_onUnsubscribe">
+        </global-data>
+
+        <div class="card">
+            <paper-input always-float-label label="email" value="{{user.email}}"></paper-input>
+            <paper-input always-float-label label="password" value="{{user.password}}"></paper-input>
+            <paper-button raised class="indigo">Cancelar</paper-button>
+            <paper-button on-tap="registrarse" raised class="green">Registrarse</paper-button>
+        </div>
+
+
+
+        <iron-ajax id="ajaxsinup" method="POST" url="http://0.0.0.0:3000/api/clientes" params='' handle-as="json" on-response="respuestasignup"
+         content-type="application/json"
+        debounce-duration="300"></iron-ajax>
+        <iron-ajax id="ajaxlogin" method="POST" url="http://0.0.0.0:3000/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
+        content-type="application/json"
+        debounce-duration="300"></iron-ajax>
+
+        <app-location
+        route="{{route}}"
+        url-space-regex="^[[rootPath]]">
+    </app-location>
+
+    <app-route
+        route="{{route}}"
+        pattern="[[rootPath]]:page"
+        data="{{routeData}}"
+        tail="{{subroute}}">
+    </app-route>
+
+    </template>
+
+    <script>
+        var data = document.querySelector('#globalData');
+        class MyViewSignup extends Polymer.Element {
+            static get is() {
+                return 'my-view-signup';
+            }
+            static get properties() {
+                return {
+                    email: String,
+                    password:String,
+                    user: {
+                        type: Object, 
+                        value: function () {
+                            return {}
+                        }
+                    },
+                    host: {
+                        type: String,
+                        value: function () {
+                            return location.hostname
+                        }
+                    }
+
+                }
+            }
+            registrarse() {
+                this.$.ajaxsinup.body = JSON.stringify({
+                    'email': this.user.email,
+                    'password': this.user.password
+                });
+                this.$.ajaxsinup.generateRequest()
+            }
+            respuestasignup(res) {
+                console.log(res);
+                this.$.ajaxlogin.body = JSON.stringify({
+                    'email': this.user.email,
+                    'password': this.user.password
+                });
+                this.user.id=  res.detail.__data.response.id;
+                this.user1 = {};
+                
+                this.user1.id=  res.detail.__data.response.id;
+                this.$.globalData.set("user",this.user)
+                this.$.ajaxlogin.generateRequest()
+            }
+
+            respuestalogin(res) {
+                console.log(res);
+                
+                this.user.token=  res.detail.__data.response.id;
+                this.user.logueado = true;
+                this.user1.token=  res.detail.__data.response.id;
+                this.user1.logueado = true;
+                this.set('route.path', '/');
+                this.set('routeData.page', 'eventos');
+                
+            }
+        }
+
+        window.customElements.define(MyViewSignup.is, MyViewSignup);
+    </script>
+</dom-module>
