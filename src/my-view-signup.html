@@ -1,6 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/global-variable/global-variable.html">
-<link rel="import" href="../bower_components/global-variable/global-data.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 
@@ -74,16 +72,6 @@
                 color: white;
             }
         </style>
-        <global-variable key="user" 
-            value="{{user1}}">
-        </global-variable>
-        
-        <global-data id="globalData"
-            on-set="_onSet"
-            on-subscribe="_onSubscribe"
-            on-unsubscribe="_onUnsubscribe">
-        </global-data>
-
         <div class="card">
             <paper-input always-float-label label="email" value="{{user.email}}"></paper-input>
             <paper-input always-float-label label="password" value="{{user.password}}"></paper-input>
@@ -115,7 +103,6 @@
     </template>
 
     <script>
-        var data = document.querySelector('#globalData');
         class MyViewSignup extends Polymer.Element {
             static get is() {
                 return 'my-view-signup';
@@ -156,6 +143,7 @@
                 this.user1 = {};
                 
                 this.user1.id=  res.detail.__data.response.id;
+                
                 this.$.globalData.set("user",this.user)
                 this.$.ajaxlogin.generateRequest()
             }
@@ -168,7 +156,7 @@
                 this.user1.token=  res.detail.__data.response.id;
                 this.user1.logueado = true;
                 this.set('route.path', '/');
-                this.set('routeData.page', 'eventos');
+                this.set('routeData.page', 'historia');
                 
             }
         }

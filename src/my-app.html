@@ -23,10 +23,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="my-icons.html">
 
 <link rel="import" href="my-view-historia.html">
+<link rel="import" href="my-view-login.html">
+<link rel="import" href="my-view-signup.html">
+
 <link rel="import" href="my-view-404.html">
 
 <dom-module id="my-app">
   <template>
+
     <style>
       :host {
         --app-primary-color: #4285f4;
@@ -65,7 +69,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-weight: bold;
       }
     </style>
-
+    
     <app-location
         route="{{route}}"
         url-space-regex="^[[rootPath]]">
@@ -83,9 +87,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]" opened="false">
         <app-toolbar>Menu</app-toolbar>
+        <p>Hola!, {{email}}</p>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="historia" href="[[rootPath]]login">Login</a>
-          <a name="historia" href="[[rootPath]]signup">Signup</a>
+          <a name="login" href="[[rootPath]]login">Login</a>
+          <a name="signup" href="[[rootPath]]signup">Signup</a>
           <a name="historia" href="[[rootPath]]historia">Historia</a>
 
         </iron-selector>
@@ -106,18 +111,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             attr-for-selected="name"
             fallback-selection="historia"
             role="main">
-          <my-view-historia name="historia"></my-view-historia>
+
           <my-view-login name="login"></my-view-login>
           <my-view-signup name="signup"></my-view-signup>
+          <my-view-historia name="historia"></my-view-historia>
           <my-view-404 name="page404"></my-view-404>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
   </template>
 
-  <script>
+  <script>   
+
     class MyApp extends Polymer.Element {
       static get is() { return 'my-app'; }
+     
 
       static get properties() {
         return {
@@ -130,7 +138,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           subroute: String,
           // This shouldn't be neccessary, but the Analyzer isn't picking up
           // Polymer.Element#rootPath
-          rootPath: String,
+          rootPath: String
         };
       }
 
@@ -141,6 +149,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _routePageChanged(page) {
+      
+       // console.log('Usr1:' + data.get('user1'));
+
         // If no page was found in the route data, page will be an empty string.
         // Default to 'view1' in that case.
         this.page = page || 'historia';
@@ -149,9 +160,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
         }
+
+
+      }
+      _inicio(){
+        super.ready();
+        this.email = localStorage.getItem("usr")
+        console.log(localStorage.getItem("usr"));
+
       }
 
       _pageChanged(page) {
+        this.email = localStorage.getItem("usr")
+        console.log(localStorage.getItem("usr"));
+
         // Load page import on demand. Show 404 page if fails
         var resolvedPageUrl = this.resolveUrl('my-view-' + page + '.html');
         console.log(resolvedPageUrl);
@@ -160,6 +182,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             null,
             this._showPage404.bind(this),
             true);
+
+//        console.log('Usr:' + data.get('usuario'));
       }
 
       _showPage404() {
@@ -168,5 +192,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     window.customElements.define(MyApp.is, MyApp);
+
   </script>
 </dom-module>
