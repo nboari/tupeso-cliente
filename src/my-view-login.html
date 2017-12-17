@@ -136,10 +136,11 @@
                 console.log(res);
                 this.user.id = res.detail.__data.response.userId;
                 this.user.token = res.detail.__data.response.id;
-
+                this.user.nombre = res.detail.__data.response.username;
                 localStorage.setItem("usr", this.user.email);
                 localStorage.setItem("token", this.user.token);
                 localStorage.setItem("usrId", this.user.id);
+                localStorage.setItem("usrN", null);
                 localStorage.setItem("usrLog", "true");
 
                 this.set('route.path', '/');
@@ -161,6 +162,7 @@
                 localStorage.setItem("usrLog", "false");
                 localStorage.setItem("token", null);
                 localStorage.setItem("usrId", null);
+                localStorage.setItem("usrN", null);
                 console.log("paso");
             }
 
