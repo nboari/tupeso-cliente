@@ -101,13 +101,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div>
       <paper-fab id="fab" icon="add" on-click="openDialog"></paper-fab>
     </div>
-    <iron-ajax id="AjaxGet" url="http://0.0.0.0:3000/api/pesos" on-response="handleAjaxGetResponse" on-error="handleAjaxGetError"
-      auto>
+    <iron-ajax id="AjaxGet" on-response="handleAjaxGetResponse" on-error="handleAjaxGetError">
     </iron-ajax>
-    <iron-ajax id="AjaxGetDesc" url="http://0.0.0.0:3000/api/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D"
-      on-response="handleAjaxGetDescResponse" on-error="handleAjaxGetDescError" auto>
+    <iron-ajax id="AjaxGetDesc" on-response="handleAjaxGetDescResponse" on-error="handleAjaxGetDescError">
     </iron-ajax>
-    <iron-ajax id="AjaxPost" method="post" url="http://0.0.0.0:3000/api/pesos" handle-as="json" content-type="application/json"
+    <iron-ajax id="AjaxPost" method="post" handle-as="json" content-type="application/json"
       on-response="handleAjaxPostResponse" on-error="handleAjaxPostError" />
     </iron-ajax>
     <iron-ajax id="AjaxDelete" method="delete" handle-as="json" content-type="application/json"
@@ -126,6 +124,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         }
       }
+      ready() {
+        super.ready();
+        this.$.AjaxGet.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token="+ localStorage.getItem("token")
+        this.$.AjaxGetDesc.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token="+ localStorage.getItem("token")
+        this.$.AjaxGet.generateRequest();
+        this.$.AjaxGetDesc.generateRequest();
+        console.log("Refresca");
+      }
       connectedCallback() {
         super.connectedCallback();
         this.addEventListener('iron-resize', e => this.$.googleChart.redraw());
@@ -133,7 +139,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       eliminarPeso(e) {
         var peso = JSON.parse(e.detail.peso);
-        this.$.AjaxDelete.url="https://tupeso-server.herokuapp.com/api/pesos/" + peso.id
+        this.$.AjaxDelete.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos/"+ peso.id +"?access_token="+ localStorage.getItem("token")
         this.$.AjaxDelete.generateRequest();
       }
       handleAjaxDeleteError(e) {
@@ -141,6 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       submitForm() {
         this.$.AjaxPost.body = { "peso": this.$.peso.value, "fecha": Date() };
+        this.$.AjaxPost.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token="+ localStorage.getItem("token")
         this.$.AjaxPost.generateRequest();
         this.$.papperDialog.close();
         this.resetForm();
@@ -150,8 +157,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       handleAjaxPostResponse(data) {
         console.log("reshandleAjaxPostResponse");
+        this.$.AjaxGet.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token="+ localStorage.getItem("token")
+        this.$.AjaxGetDesc.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token="+ localStorage.getItem("token")
         this.$.AjaxGet.generateRequest();
-        this.$.AjaxGetDesc.generateRequest();
+        this.$.AjaxGetDesc.generateRequest();        
       }
       handleAjaxPostError() {
         console.log("handleAjaxPostError");
@@ -159,8 +168,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       handleAjaxDeleteResponse(data) {
         console.log("reshandleAjaxDeleteResponse");
         console.log(data);
+        this.$.AjaxGet.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token="+ localStorage.getItem("token")
+        this.$.AjaxGetDesc.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token="+ localStorage.getItem("token")
         this.$.AjaxGet.generateRequest();
-        this.$.AjaxGetDesc.generateRequest();
+        this.$.AjaxGetDesc.generateRequest();        
       }
       handleAjaxDeleteError() {
         console.log("handleAjaxPostError");
@@ -173,6 +184,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           arrayPesoChart.push([fechaFromateada, element.peso]);
         });
         this.set('arrayPesoChart', arrayPesoChart);
+        this.$.googleChart.redraw();
+
       }
       handleAjaxGetError() {
         console.log("handleAjaxGetError");
@@ -189,6 +202,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             "fecha": fechaFromateada
           })
         });
+        lista.renderL();
       }
       handleAjaxGetDescError() {
         console.log("handleAjaxGetDescError");
