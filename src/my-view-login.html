@@ -1,0 +1,168 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">>
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view-login">
+    <template>
+        <style include="shared-styles">
+             :host {
+                display: block;
+                padding: 10px;
+            }
+
+            a,
+            .card {
+                text-decoration-line: none;
+            }
+
+            h1 {
+                font-size: 1em;
+            }
+
+            h3 {
+                font-size: 0.8em;
+            }
+
+            .card>* {
+                margin: 0px;
+            }
+
+            paper-input {
+                max-width: 400px;
+                margin: auto;
+            }
+
+            paper-button {
+                font-family: 'Roboto', 'Noto', sans-serif;
+                font-weight: normal;
+                font-size: 14px;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            paper-button.green {
+                background-color: var(--paper-green-500);
+                color: white;
+            }
+
+            paper-button.green[active] {
+                background-color: var(--paper-red-500);
+            }
+
+            paper-button.disabled {
+                color: white;
+            }
+        </style>
+        <div class="card">
+            <h2> Login </h2>
+        </div>
+        <div class="cardLogin">
+            <paper-input required auto-validate error-message="Es necesario, complételo" label="email" value="{{user.email}}">
+                <iron-icon icon="mail" slot="prefix"></iron-icon>
+            </paper-input>
+            <paper-input type="password" label="password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo" ></paper-input>
+            <p> </p>
+            <paper-button on-tap="loguearse" raised class="green">Ingresar</paper-button>
+
+        </div>
+
+        <paper-dialog id="papperDialog">
+            <h2>Usuario/password inexistente</h2>
+            <h0>Si no posee cuenta, regístrese.</h0>
+            <iron-form id="formPeso">
+                <form action="/foo" method="get">
+                    <paper-button class="green" raised on-click="_cerrarPopup">Ok</paper-button>
+                </form>
+            </iron-form>
+        </paper-dialog>
+
+        <iron-ajax id="ajaxlogin" method="POST" url="http://0.0.0.0:3000/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
+             content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
+        <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
+        </app-location>
+
+
+        <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}">
+        </app-route>
+    </template>
+
+    <script>
+        class MyViewLogin extends Polymer.Element {
+            static get is() {
+                return 'my-view-login';
+            }
+            static get properties() {
+                return {
+                    /**
+                     * Description for prop
+                     */
+                    user: {
+                        type: Object,
+                        value: function () {
+                            return {
+                                email: "",
+                                token: "",
+                                id: ""
+                            }
+                        }
+                    },
+                    host: {
+                        type: String,
+                        value: function () {
+                            return location.hostname
+                        }
+                    }
+
+                }
+            }
+            loguearse() {
+                this.$.ajaxlogin.body = JSON.stringify({
+                    'email': this.user.email,
+                    'password': this.user.password
+                });
+
+                this.$.ajaxlogin.generateRequest();
+            }
+            respuestalogin(res) {
+
+                console.log(res);
+                this.user.id = res.detail.__data.response.userId;
+                this.user.token = res.detail.__data.response.id;
+
+                localStorage.setItem("usr", this.user.email);
+                localStorage.setItem("token", this.user.token);
+                localStorage.setItem("usrId", this.user.id);
+                localStorage.setItem("usrLog", "true");
+
+                this.set('route.path', '/');
+                this.set('routeData.page', 'historia');
+
+            }
+            _errorLogin(){
+                this.$.papperDialog.open();
+            }
+            _cerrarPopup() {
+                this.$.papperDialog.close();
+            }
+            ready() {
+                super.ready();
+                var usuario = {
+                    email: "usuario"
+                }
+                localStorage.setItem("usr", usuario.email);
+                localStorage.setItem("usrLog", "false");
+                localStorage.setItem("token", null);
+                localStorage.setItem("usrId", null);
+                console.log("paso");
+            }
+
+        }
+
+        window.customElements.define(MyViewLogin.is, MyViewLogin);
+    </script>
+</dom-module>

@@ -101,13 +101,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div>
       <paper-fab id="fab" icon="add" on-click="openDialog"></paper-fab>
     </div>
-    <iron-ajax id="AjaxGet" url="https://tupeso-server.herokuapp.com/api/pesos" on-response="handleAjaxGetResponse" on-error="handleAjaxGetError"
+    <iron-ajax id="AjaxGet" url="http://0.0.0.0:3000/api/pesos" on-response="handleAjaxGetResponse" on-error="handleAjaxGetError"
       auto>
     </iron-ajax>
-    <iron-ajax id="AjaxGetDesc" url="https://tupeso-server.herokuapp.com/api/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D"
+    <iron-ajax id="AjaxGetDesc" url="http://0.0.0.0:3000/api/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D"
       on-response="handleAjaxGetDescResponse" on-error="handleAjaxGetDescError" auto>
     </iron-ajax>
-    <iron-ajax id="AjaxPost" method="post" url="https://tupeso-server.herokuapp.com/api/pesos" handle-as="json" content-type="application/json"
+    <iron-ajax id="AjaxPost" method="post" url="http://0.0.0.0:3000/api/pesos" handle-as="json" content-type="application/json"
       on-response="handleAjaxPostResponse" on-error="handleAjaxPostError" />
     </iron-ajax>
     <iron-ajax id="AjaxDelete" method="delete" handle-as="json" content-type="application/json"
@@ -115,7 +115,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </iron-ajax>
     <iron-resizable-behavior></iron-resizable-behavior>
   </template>
-
+ 
   <script>
     class MyViewHistoria extends Polymer.mixinBehaviors(Polymer.IronResizableBehavior, Polymer.Element) {
       static get is() { return 'my-view-historia'; }

@@ -20,19 +20,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="my-icons.html">
 
 <link rel="import" href="my-view-historia.html">
+<link rel="import" href="my-view-login.html">
+<link rel="import" href="my-view-signup.html">
+
 <link rel="import" href="my-view-404.html">
 
 <dom-module id="my-app">
   <template>
+
     <style>
-      :host {
+       :host {
         --app-primary-color: #4285f4;
         --app-secondary-color: black;
         --app-drawer-width: 200px;
-        display: block;
       }
 
       app-drawer-layout:not([narrow]) [drawer-toggle] {
@@ -54,7 +59,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       .drawer-list a {
         display: block;
-        padding: 0 16px;
+        padding: 0 8px;
         text-decoration: none;
         color: var(--app-secondary-color);
         line-height: 40px;
@@ -64,18 +69,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: black;
         font-weight: bold;
       }
+                  paper-button.green {
+                background-color: var(--paper-green-500);
+                color: white;
+            }
+
+            paper-button.green[active] {
+                background-color: var(--paper-red-500);
+            }
     </style>
 
-    <app-location
-        route="{{route}}"
-        url-space-regex="^[[rootPath]]">
+    <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
     </app-location>
 
-    <app-route
-        route="{{route}}"
-        pattern="[[rootPath]]:page"
-        data="{{routeData}}"
-        tail="{{subroute}}">
+    <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}">
     </app-route>
 
     <app-drawer-layout fullbleed force-narrow>
@@ -83,8 +90,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]" opened="false">
         <app-toolbar>Menu</app-toolbar>
+        <div hidden$="[[!SwLog]]">
+          <p> <h4>Hola!, {{email}}</h4></p>
+        </div>
+        <div hidden$="[[SwLog]]">
+          <p> <h4>Bienvenido</h4></p>
+        </div>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="historia" href="[[rootPath]]historia">Historia</a>
+          <div hidden$="[[SwLog]]">
+            <a name="login" href="[[rootPath]]login">Login</a>
+            <a name="signup" href="[[rootPath]]signup">Signup</a>
+          </div>
+          <div hidden$="[[!SwLog]]">
+            <a name="historia" href="[[rootPath]]historia">Historia</a>
+            <paper-button on-tap="_logoff" raised class="green">Logoff</paper-button>
+          </div>
         </iron-selector>
       </app-drawer>
 
@@ -98,11 +118,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </app-toolbar>
         </app-header>
 
-        <iron-pages
-            selected="[[page]]"
-            attr-for-selected="name"
-            fallback-selection="historia"
-            role="main">
+        <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="historia" role="main">
+
+          <my-view-login name="logoff"></my-view-login>
+          <my-view-login name="login"></my-view-login>
+          <my-view-signup name="signup"></my-view-signup>
           <my-view-historia name="historia"></my-view-historia>
           <my-view-404 name="page404"></my-view-404>
         </iron-pages>
@@ -112,7 +132,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
     class MyApp extends Polymer.Element {
-      static get is() { return 'my-app'; }
+      static get is() {
+        return 'my-app';
+      }
+
 
       static get properties() {
         return {
@@ -125,7 +148,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           subroute: String,
           // This shouldn't be neccessary, but the Analyzer isn't picking up
           // Polymer.Element#rootPath
-          rootPath: String,
+          rootPath: String
         };
       }
 
@@ -136,25 +159,69 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _routePageChanged(page) {
+
+        // console.log('Usr1:' + data.get('user1'));
+
         // If no page was found in the route data, page will be an empty string.
         // Default to 'view1' in that case.
-        this.page = page || 'historia';
-        
+        this.page = page || 'login';
+
         // Close a non-persistent drawer when the page & route are changed.
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
         }
+
+
+      }
+      _inicio() {
+        super.ready();
+        //  this.email = localStorage.getItem("usr")
+        //  console.log(localStorage.getItem("usr"));
+        //  this.SwLog = localStorage.getItem("usrLog");
+        //  console.log(localStorage.getItem("usrLog"));
+
+      }
+      _logoff() {
+        var usuario = {
+          email: "usuario"
+        }
+        localStorage.setItem("usr", usuario.email);
+        localStorage.setItem("usrLog", "false");
+        localStorage.setItem("token", null);
+        localStorage.setItem("usrId", null);
+        if (localStorage.getItem("usrLog") == "false") {
+          this.SwLog = false;
+        } else {
+          this.SwLog = true;
+        };
+        this.set('route.path', '/');
+        this.set('routeData.page', 'login');
       }
 
       _pageChanged(page) {
+
+        this.email = localStorage.getItem("usr");
+
+        if (localStorage.getItem("usrLog") == "false") {
+          this.SwLog = false;
+        } else {
+          this.SwLog = true;
+        };
+
+        console.log(localStorage.getItem("usr"));
+        console.log(localStorage.getItem("usrId"));
+        console.log(localStorage.getItem("token"));
+        console.log(localStorage.getItem("usrLog"));
+        console.log(this.SwLog);
+
         // Load page import on demand. Show 404 page if fails
         var resolvedPageUrl = this.resolveUrl('my-view-' + page + '.html');
         console.log(resolvedPageUrl);
         Polymer.importHref(
-            resolvedPageUrl,
-            null,
-            this._showPage404.bind(this),
-            true);
+          resolvedPageUrl,
+          null,
+          this._showPage404.bind(this),
+          true);
       }
 
       _showPage404() {
