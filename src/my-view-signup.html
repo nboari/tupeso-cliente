@@ -1,11 +1,11 @@
-<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">>
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
-
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view-signup">
@@ -45,20 +45,6 @@
                 -webkit-font-smoothing: antialiased;
             }
 
-            paper-button.indigo {
-                background-color: var(--paper-indigo-500);
-                color: white;
-                --paper-button-raised-keyboard-focus: {
-                    background-color: var(--paper-pink-a200) !important;
-                    color: white !important;
-                }
-                ;
-            }
-
-            paper-button.indigo:hover {
-                background-color: var(--paper-indigo-400);
-            }
-
             paper-button.green {
                 background-color: var(--paper-green-500);
                 color: white;
@@ -73,33 +59,46 @@
             }
         </style>
         <div class="card">
-            <paper-input always-float-label label="email" value="{{user.email}}"></paper-input>
-            <paper-input always-float-label label="password" value="{{user.password}}"></paper-input>
-            <paper-button raised class="indigo">Cancelar</paper-button>
-            <paper-button on-tap="registrarse" raised class="green">Registrarse</paper-button>
+            <h2> Signup </h2>
+        </div>
+        <div class="cardLogin">
+            <paper-input required auto-validate error-message="Es necesario, complételo" label="Email" value="{{user.email}}">
+                <iron-icon icon="mail" slot="prefix"></iron-icon>
+                <div slot="suffix">@email.com</div>
+            </paper-input>
+            <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
+            <paper-input required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
+                value="{{user.edad}}">
+                <div slot="suffix">años</div>
+            </paper-input>
+            <paper-input required auto-validate error-message="Es necesario, complételo<" label="Altura" auto-validate allowed-pattern="[0-9]"
+                value="{{user.altura}}">
+                <div slot="suffix">cm</div>
+            </paper-input>
+            <paper-input type="password" label="password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+            <p> </p>
+            <paper-button on-tap="signup" raised class="green">Registrarse</paper-button>
+
         </div>
 
+        <paper-dialog id="papperDialog">
+            <h2>Usuario ya registrado</h2>
+            <h0>Por favor, intente con otro email</h0>
+            <iron-form id="formPeso">
+                <form action="/foo" method="get">
+                    <paper-button class="green" raised on-click="_cerrarPopup">Ok</paper-button>
+                </form>
+            </iron-form>
+        </paper-dialog>
+
+        <iron-ajax id="ajaxsignup" method="POST" url="http://0.0.0.0:3000/api/clientes" params='' handle-as="json" on-response="respuestasignup"
+            content-type="application/json" debounce-duration="300" on-error="_errorsignup"></iron-ajax>
+        <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
+        </app-location>
 
 
-        <iron-ajax id="ajaxsinup" method="POST" url="http://0.0.0.0:3000/api/clientes" params='' handle-as="json" on-response="respuestasignup"
-         content-type="application/json"
-        debounce-duration="300"></iron-ajax>
-        <iron-ajax id="ajaxlogin" method="POST" url="http://0.0.0.0:3000/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
-        content-type="application/json"
-        debounce-duration="300"></iron-ajax>
-
-        <app-location
-        route="{{route}}"
-        url-space-regex="^[[rootPath]]">
-    </app-location>
-
-    <app-route
-        route="{{route}}"
-        pattern="[[rootPath]]:page"
-        data="{{routeData}}"
-        tail="{{subroute}}">
-    </app-route>
-
+        <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}">
+        </app-route>
     </template>
 
     <script>
@@ -109,12 +108,20 @@
             }
             static get properties() {
                 return {
-                    email: String,
-                    password:String,
+                    /**
+                     * Description for prop
+                     */
                     user: {
-                        type: Object, 
+                        type: Object,
                         value: function () {
-                            return {}
+                            return {
+                                email: "",
+                                token: "",
+                                id: "",
+                                nombre: "",
+                                edad: "",
+                                altura: ""
+                            }
                         }
                     },
                     host: {
@@ -126,39 +133,68 @@
 
                 }
             }
-            registrarse() {
-                this.$.ajaxsinup.body = JSON.stringify({
+            signup() {
+                this.$.ajaxsignup.body = JSON.stringify({
                     'email': this.user.email,
-                    'password': this.user.password
+                    'password': this.user.password,
+                    'edad': this.user.edad,
+                    'altura': this.user.altura,
+                    'username': this.user.nombre
                 });
-                this.$.ajaxsinup.generateRequest()
+
+                if (this.user.email <= "") {
+                    return
+                };
+                if (this.user.password <= "") {
+                    return
+                };
+                if (this.user.username <= "") {
+                    return
+                };
+                if (this.user.edad <= 0) {
+                    return
+                };
+                if (this.user.altura <= 0) {
+                    return
+                };
+
+                this.$.ajaxsignup.generateRequest();
             }
             respuestasignup(res) {
-                console.log(res);
-                this.$.ajaxlogin.body = JSON.stringify({
-                    'email': this.user.email,
-                    'password': this.user.password
-                });
-                this.user.id=  res.detail.__data.response.id;
-                this.user1 = {};
-                
-                this.user1.id=  res.detail.__data.response.id;
-                
-                this.$.globalData.set("user",this.user)
-                this.$.ajaxlogin.generateRequest()
-            }
 
-            respuestalogin(res) {
                 console.log(res);
-                
-                this.user.token=  res.detail.__data.response.id;
-                this.user.logueado = true;
-                this.user1.token=  res.detail.__data.response.id;
-                this.user1.logueado = true;
+                this.user.id = res.detail.__data.response.userId;
+                this.user.token = res.detail.__data.response.id;
+
+                localStorage.setItem("usr", this.user.email);
+                localStorage.setItem("token", this.user.token);
+                localStorage.setItem("usrId", this.user.id);
+                localStorage.setItem("usrN", this.user.nombre);
+                localStorage.setItem("usrLog", "true");
+
                 this.set('route.path', '/');
                 this.set('routeData.page', 'historia');
-                
+
             }
+            _errorsignup() {
+                this.$.papperDialog.open();
+            }
+            _cerrarPopup() {
+                this.$.papperDialog.close();
+            }
+            ready() {
+                super.ready();
+                var usuario = {
+                    email: "usuario"
+                }
+                localStorage.setItem("usr", usuario.email);
+                localStorage.setItem("usrLog", "false");
+                localStorage.setItem("token", null);
+                localStorage.setItem("usrId", null);
+                localStorage.setItem("usrN", null);
+                console.log("paso");
+            }
+
         }
 
         window.customElements.define(MyViewSignup.is, MyViewSignup);

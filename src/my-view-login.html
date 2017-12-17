@@ -5,7 +5,7 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
-
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view-login">
@@ -45,20 +45,6 @@
                 -webkit-font-smoothing: antialiased;
             }
 
-            paper-button.indigo {
-                background-color: var(--paper-indigo-500);
-                color: white;
-                --paper-button-raised-keyboard-focus: {
-                    background-color: var(--paper-pink-a200) !important;
-                    color: white !important;
-                }
-                ;
-            }
-
-            paper-button.indigo:hover {
-                background-color: var(--paper-indigo-400);
-            }
-
             paper-button.green {
                 background-color: var(--paper-green-500);
                 color: white;
@@ -72,31 +58,39 @@
                 color: white;
             }
         </style>
-
         <div class="card">
-            <paper-input always-float-label label="email" value="{{user.email}}"></paper-input>
-            <paper-input always-float-label label="password" value="{{user.password}}"></paper-input>
-            <paper-button raised class="indigo">Cancelar</paper-button>
-            <paper-button on-tap="loguearse" raised class="green">Login</paper-button>
+            <h2> Login </h2>
+        </div>
+        <div class="cardLogin">
+            <paper-input required auto-validate error-message="Es necesario, complételo" label="email" value="{{user.email}}">
+                <iron-icon icon="mail" slot="prefix"></iron-icon>
+            </paper-input>
+            <paper-input type="password" label="password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo" ></paper-input>
+            <p> </p>
+            <paper-button on-tap="loguearse" raised class="green">Ingresar</paper-button>
+
         </div>
 
-        <iron-ajax id="ajaxlogin" method="POST" url="http://0.0.0.0:3000/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
-        content-type="application/json"
-        debounce-duration="300"></iron-ajax>
-           <app-location
-        route="{{route}}"
-        url-space-regex="^[[rootPath]]">
-    </app-location>
+        <paper-dialog id="papperDialog">
+            <h2>Usuario/password inexistente</h2>
+            <h0>Si no posee cuenta, regístrese.</h0>
+            <iron-form id="formPeso">
+                <form action="/foo" method="get">
+                    <paper-button class="green" raised on-click="_cerrarPopup">Ok</paper-button>
+                </form>
+            </iron-form>
+        </paper-dialog>
 
-    
-    <app-route
-        route="{{route}}"
-        pattern="[[rootPath]]:page"
-        data="{{routeData}}"
-        tail="{{subroute}}">
-    </app-route>
+        <iron-ajax id="ajaxlogin" method="POST" url="http://0.0.0.0:3000/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
+             content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
+        <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
+        </app-location>
+
+
+        <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}">
+        </app-route>
     </template>
-    
+
     <script>
         class MyViewLogin extends Polymer.Element {
             static get is() {
@@ -112,7 +106,7 @@
                         value: function () {
                             return {
                                 email: "",
-                                token: "", 
+                                token: "",
                                 id: ""
                             }
                         }
@@ -137,29 +131,36 @@
             respuestalogin(res) {
 
                 console.log(res);
-                this.user.id=  res.detail.__data.response.userId;
-                this.user.token=  res.detail.__data.response.id;
+                this.user.id = res.detail.__data.response.userId;
+                this.user.token = res.detail.__data.response.id;
 
-                localStorage.setItem("usr",this.user.email);
-                localStorage.setItem("token",this.user.token);
-                localStorage.setItem("usrId",this.user.id);
+                localStorage.setItem("usr", this.user.email);
+                localStorage.setItem("token", this.user.token);
+                localStorage.setItem("usrId", this.user.id);
                 localStorage.setItem("usrLog", "true");
-                
+
                 this.set('route.path', '/');
                 this.set('routeData.page', 'historia');
-                
+
+            }
+            _errorLogin(){
+                this.$.papperDialog.open();
+            }
+            _cerrarPopup() {
+                this.$.papperDialog.close();
+            }
+            ready() {
+                super.ready();
+                var usuario = {
+                    email: "usuario"
+                }
+                localStorage.setItem("usr", usuario.email);
+                localStorage.setItem("usrLog", "false");
+                localStorage.setItem("token", null);
+                localStorage.setItem("usrId", null);
+                console.log("paso");
             }
 
-            ready() {
-              super.ready();
-              var usuario = {email:"usuario"}
-              localStorage.setItem("usr", usuario.email);
-              localStorage.setItem("usrLog", "false");
-              localStorage.setItem("token", null);
-              localStorage.setItem("usrId", null);
-              console.log("paso");
-            }
-      
         }
 
         window.customElements.define(MyViewLogin.is, MyViewLogin);
