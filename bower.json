@@ -25,6 +25,7 @@
     "paper-input": "PolymerElements/paper-input#^2.0.3",
     "paper-button": "PolymerElements/paper-button#^2.0.0",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^2.0.1",
+    "paper-item": "PolymerElements/paper-item#^2.0.0",
     "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.1",
     "app-storage": "PolymerElements/app-storage#^2.0.2",
     "iron-localstorage": "PolymerElements/iron-localstorage#^2.0.0"
