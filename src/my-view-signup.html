@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="modulos/match-passwords-validator.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view-signup">
@@ -75,7 +76,13 @@
                 value="{{user.altura}}">
                 <div slot="suffix">cm</div>
             </paper-input>
-            <paper-input type="password" label="password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+            <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
+            <paper-input type="password" label="Password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+            <paper-input type="password"
+            label="Confirmar"
+            auto-validate
+            validator="match-passwords-validator"
+            error-message="Es necesario que sean iguales" value="{{user.password2}}"></paper-input>
             <p> </p>
             <paper-button on-tap="signup" raised class="green">Registrarse</paper-button>
 
@@ -129,8 +136,7 @@
                         value: function () {
                             return location.hostname
                         }
-                    }
-
+                    },
                 }
             }
             signup() {
@@ -148,7 +154,7 @@
                 if (this.user.password <= "") {
                     return
                 };
-                if (this.user.username <= "") {
+                if (this.user.nombre <= "") {
                     return
                 };
                 if (this.user.edad <= 0) {
@@ -157,9 +163,24 @@
                 if (this.user.altura <= 0) {
                     return
                 };
+                if (this.user.password != this.user.password2){
+                    return
+                }
 
                 this.$.ajaxsignup.generateRequest();
             }
+
+            _passValChange() {
+                console.log(this.user.password2);
+                console.log(this.user.password);
+                if (this.user.password2 == this.user.password) {
+                    this.passVal = true;
+                }
+                this.passVal = false;
+                console.log(this.passVal);
+            }
+
+
             respuestasignup(res) {
 
                 console.log(res);
@@ -188,10 +209,10 @@
                     email: "usuario"
                 }
                 localStorage.setItem("usr", usuario.email);
-                localStorage.setItem("usrLog", "false");
                 localStorage.setItem("token", null);
                 localStorage.setItem("usrId", null);
                 localStorage.setItem("usrN", null);
+                localStorage.setItem("usrLog", "false");
                 console.log("paso");
             }
 

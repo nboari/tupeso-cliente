@@ -136,7 +136,7 @@
                 console.log(res);
                 this.user.id = res.detail.__data.response.userId;
                 this.user.token = res.detail.__data.response.id;
-                this.user.nombre = res.detail.__data.response.username;
+                
                 localStorage.setItem("usr", this.user.email);
                 localStorage.setItem("token", this.user.token);
                 localStorage.setItem("usrId", this.user.id);
