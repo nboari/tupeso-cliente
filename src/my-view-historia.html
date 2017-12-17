@@ -28,10 +28,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
         padding: 5px;
+        --lista-pesos-widht: 95%;
       }
 
       google-chart {
-        height: 300px;
+        height: 250px;
         width: 100%;
       }
 
@@ -48,7 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       .item {
         padding: 10px;
-        text-align: center;        
+        text-align: center;
       }
 
       paper-button {
@@ -73,7 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       h1 {
-        text-align: center;        
+        text-align: center;
       }
     </style>
     <div class="card">
@@ -84,10 +85,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
     <div class="card">
       <h1>Lista de ultimos pesajes</h1>
-      <lista-pesos 
-        id="listaPesos" 
-        pesos="[]">
-      </lista-pesos>      
+      <lista-pesos id="listaPesos" pesos="[]">
+      </lista-pesos>
     </div>
     <paper-dialog id="papperDialog">
       <h2>Nuevo Pesaje</h2>
@@ -102,14 +101,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div>
       <paper-fab id="fab" icon="add" on-click="openDialog"></paper-fab>
     </div>
-    <iron-ajax id="AjaxGet" url="https://tupeso-server.herokuapp.com/api/pesos" on-response="handleAjaxGetResponse"
-      on-error="handleAjaxGetError" auto>
+    <iron-ajax id="AjaxGet" url="https://tupeso-server.herokuapp.com/api/pesos" on-response="handleAjaxGetResponse" on-error="handleAjaxGetError"
+      auto>
     </iron-ajax>
-    <iron-ajax id="AjaxGetDesc" url="https://tupeso-server.herokuapp.com/api/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" on-response="handleAjaxGetDescResponse"
-      on-error="handleAjaxGetDescError" auto>
+    <iron-ajax id="AjaxGetDesc" url="https://tupeso-server.herokuapp.com/api/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D"
+      on-response="handleAjaxGetDescResponse" on-error="handleAjaxGetDescError" auto>
     </iron-ajax>
     <iron-ajax id="AjaxPost" method="post" url="https://tupeso-server.herokuapp.com/api/pesos" handle-as="json" content-type="application/json"
       on-response="handleAjaxPostResponse" on-error="handleAjaxPostError" />
+    </iron-ajax>
+    <iron-ajax id="AjaxDelete" method="delete" handle-as="json" content-type="application/json"
+      on-response="handleAjaxDeleteResponse" on-error="handleAjaxDeleteError" />
     </iron-ajax>
     <iron-resizable-behavior></iron-resizable-behavior>
   </template>
@@ -126,7 +128,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       connectedCallback() {
         super.connectedCallback();
-        this.addEventListener('iron-resize', e => this.$.googleChart.redraw());
+        this.addEventListener('#iron-resize', e => this.$.googleChart.redraw());
+        this.addEventListener('peso-remove', (e) => this.eliminarPeso(e));
+      }
+      eliminarPeso(e) {
+        var peso = JSON.parse(e.detail.peso);
+        this.$.AjaxDelete.url="https://tupeso-server.herokuapp.com/api/pesos/" + peso.id
+        this.$.AjaxDelete.generateRequest();
+      }
+      handleAjaxDeleteError(e) {
+        console.log(this);
       }
       submitForm() {
         this.$.AjaxPost.body = { "peso": this.$.peso.value, "fecha": Date() };
@@ -145,11 +156,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       handleAjaxPostError() {
         console.log("handleAjaxPostError");
       }
+      handleAjaxDeleteResponse(data) {
+        console.log("reshandleAjaxDeleteResponse");
+        console.log(data);
+        this.$.AjaxGet.generateRequest();
+        this.$.AjaxGetDesc.generateRequest();
+      }
+      handleAjaxDeleteError() {
+        console.log("handleAjaxPostError");
+      }
       handleAjaxGetResponse(data) {
         var response = data.detail.response;
         var arrayPesoChart = [];
         response.forEach(function (element) {
-          var fechaFromateada = new Date(element.fecha).toLocaleString();
+          var fechaFromateada = new Date(element.fecha).toLocaleDateString();
           arrayPesoChart.push([fechaFromateada, element.peso]);
         });
         this.set('arrayPesoChart', arrayPesoChart);
@@ -160,15 +180,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       handleAjaxGetDescResponse(data) {
         var response = data.detail.response;
         var lista = this.$.listaPesos;
+        lista.cleanPesos();
         response.forEach(function (element) {
           var fechaFromateada = new Date(element.fecha).toLocaleString();
-          lista.addPeso({ 
-             "id": element.id, 
-             "peso": element.peso, 
-             "fecha": fechaFromateada 
-            })
+          lista.addPeso({
+            "id": element.id,
+            "peso": element.peso,
+            "fecha": fechaFromateada
+          })
         });
-        console.log(lista.pesos);
       }
       handleAjaxGetDescError() {
         console.log("handleAjaxGetDescError");

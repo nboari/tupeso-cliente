@@ -1,11 +1,34 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
 
 <dom-module id="lista-pesos">
 
     <template>
-        <template is="dom-repeat" items="[[pesos]]">
-            [[item.fecha]] : [[item.peso]]
-        </template>
+        <style>
+            .listbox {
+                margin: auto;
+                width: var(--lista-pesos-widht);
+            }
+        </style>
+
+        <div class="listbox">
+            <template is="dom-repeat" items="[[pesos]]">
+                <paper-item>
+                    <paper-item-body two-line>
+                        <div>[[item.peso]] Kg</div>
+                        <div secondary>[[item.fecha]]</div>
+                    </paper-item-body>
+                    
+                    <paper-icon-button ident$="[[item]]" 
+                        on-click="_onTrash" icon="delete" alt="Eliminalo!">
+                    </paper-icon-button>
+                </paper-item>
+            </template>
+        </div>  
     </template>
 
     <script>
@@ -16,6 +39,12 @@
                     pesos: Array
                 }
             }
+
+            _onTrash(e) {
+                var peso = e.target.getAttribute('ident');
+                this.dispatchEvent(new CustomEvent('peso-remove', {bubbles: true, composed: true, detail: {peso: peso}}));
+            }
+
             addPeso(peso) {
                 console.log("Entro en AddPeso con: " + peso.id);
                 this.push('pesos', peso);
@@ -24,6 +53,10 @@
             removePeso(peso) {
                 var index = this.users.indexOf(user);
                 this.splice('pesos', index, 1);
+            }
+
+            cleanPesos() {
+                this.pesos = [];
             }
         }
         customElements.define(ListaPesos.is, ListaPesos);
