@@ -83,7 +83,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
         });
       }
-      localStorage.setItem("usr", "lalala");
+      if (localStorage.getItem("usr") <="") {
+        var usuario = {email:"usuario"}
+        localStorage.setItem("usr", usuario.email);
+        localStorage.setItem("usrLog", "false");
+      }
     </script>
 
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->

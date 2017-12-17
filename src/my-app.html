@@ -20,6 +20,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="my-icons.html">
 
 <link rel="import" href="my-view-historia.html">
@@ -36,7 +38,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --app-primary-color: #4285f4;
         --app-secondary-color: black;
         --app-drawer-width: 200px;
-        display: block;
+      
       }
 
       app-drawer-layout:not([narrow]) [drawer-toggle] {
@@ -89,10 +91,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-toolbar>Menu</app-toolbar>
         <p>Hola!, {{email}}</p>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="login" href="[[rootPath]]login">Login</a>
-          <a name="signup" href="[[rootPath]]signup">Signup</a>
-          <a name="historia" href="[[rootPath]]historia">Historia</a>
-
+          <div hidden$="[[SwLog]]">
+            <a name="login" href="[[rootPath]]login">Login</a>
+            <a name="signup" href="[[rootPath]]signup">Signup</a>
+          </div>
+          <div hidden$="[[!SwLog]]">
+            <a name="historia" href="[[rootPath]]historia">Historia</a>
+            <paper-button on-tap="_logoff" raised class="green">Logoff</paper-button>
+          </div>
         </iron-selector>
       </app-drawer>
 
@@ -111,7 +117,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             attr-for-selected="name"
             fallback-selection="historia"
             role="main">
-
+  
+          <my-view-login name="logoff"></my-view-login>
           <my-view-login name="login"></my-view-login>
           <my-view-signup name="signup"></my-view-signup>
           <my-view-historia name="historia"></my-view-historia>
@@ -154,7 +161,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         // If no page was found in the route data, page will be an empty string.
         // Default to 'view1' in that case.
-        this.page = page || 'historia';
+        this.page = page || 'login';
         
         // Close a non-persistent drawer when the page & route are changed.
         if (!this.$.drawer.persistent) {
@@ -165,14 +172,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       _inicio(){
         super.ready();
-        this.email = localStorage.getItem("usr")
-        console.log(localStorage.getItem("usr"));
+      //  this.email = localStorage.getItem("usr")
+      //  console.log(localStorage.getItem("usr"));
+      //  this.SwLog = localStorage.getItem("usrLog");
+      //  console.log(localStorage.getItem("usrLog"));
 
+      }
+      _logoff(){
+              var usuario = {email:"usuario"}
+              localStorage.setItem("usr", usuario.email);
+              localStorage.setItem("usrLog", "false");
+              localStorage.setItem("token", null);
+              localStorage.setItem("usrId", null);
+            if (localStorage.getItem("usrLog") == "false") {
+           this.SwLog =  false;} else {this.SwLog =  true;};
+           this.set('route.path', '/');
+                this.set('routeData.page', 'login');
       }
 
       _pageChanged(page) {
-        this.email = localStorage.getItem("usr")
+
+        this.email = localStorage.getItem("usr");
+        
+        if (localStorage.getItem("usrLog") == "false") {
+           this.SwLog =  false;} else {this.SwLog =  true;};
+
         console.log(localStorage.getItem("usr"));
+        console.log(localStorage.getItem("usrId"));
+        console.log(localStorage.getItem("token"));
+        console.log(localStorage.getItem("usrLog"));
+        console.log(this.SwLog);
 
         // Load page import on demand. Show 404 page if fails
         var resolvedPageUrl = this.resolveUrl('my-view-' + page + '.html');

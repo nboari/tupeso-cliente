@@ -112,8 +112,8 @@
                         value: function () {
                             return {
                                 email: "",
-                                password: "",
-                                logueado:false
+                                token: "", 
+                                id: ""
                             }
                         }
                     },
@@ -132,23 +132,34 @@
                     'password': this.user.password
                 });
 
- //               this.cartoon.name = this.user.email;
-//                console.log(this.cartoon.name);
-
                 this.$.ajaxlogin.generateRequest();
             }
             respuestalogin(res) {
-                localStorage.setItem("usr",this.user.email);
 
                 console.log(res);
                 this.user.id=  res.detail.__data.response.userId;
                 this.user.token=  res.detail.__data.response.id;
-                this.user.logueado = true;
 
+                localStorage.setItem("usr",this.user.email);
+                localStorage.setItem("token",this.user.token);
+                localStorage.setItem("usrId",this.user.id);
+                localStorage.setItem("usrLog", "true");
+                
                 this.set('route.path', '/');
                 this.set('routeData.page', 'historia');
                 
             }
+
+            ready() {
+              super.ready();
+              var usuario = {email:"usuario"}
+              localStorage.setItem("usr", usuario.email);
+              localStorage.setItem("usrLog", "false");
+              localStorage.setItem("token", null);
+              localStorage.setItem("usrId", null);
+              console.log("paso");
+            }
+      
         }
 
         window.customElements.define(MyViewLogin.is, MyViewLogin);
