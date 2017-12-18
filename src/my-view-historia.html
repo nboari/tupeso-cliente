@@ -124,18 +124,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         }
       }
-      ready() {
-        super.ready();
-        this.$.AjaxGet.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token="+ localStorage.getItem("token")
-        this.$.AjaxGetDesc.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token="+ localStorage.getItem("token")
-        this.$.AjaxGet.generateRequest();
-        this.$.AjaxGetDesc.generateRequest();
-        console.log("Refresca");
+      disconnectedCallback() {
+         super.disconnectedCallback();
+         console.log("detached");
       }
+      ready() {
+    super.ready();
+    console.log("ready");
+  }
+
       connectedCallback() {
         super.connectedCallback();
+        this.inicio;
         this.addEventListener('iron-resize', e => this.$.googleChart.redraw());
         this.addEventListener('peso-remove', (e) => this.eliminarPeso(e));
+
+          this.$.AjaxGet.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token="+ localStorage.getItem("token");
+          this.$.AjaxGetDesc.url="http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token="+ localStorage.getItem("token");
+          this.$.AjaxGet.generateRequest();
+          this.$.AjaxGetDesc.generateRequest();
+          console.log("Refresca2");
+          this.redraw;
+
       }
       eliminarPeso(e) {
         var peso = JSON.parse(e.detail.peso);
