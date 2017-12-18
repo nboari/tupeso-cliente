@@ -100,6 +100,8 @@
 
         <iron-ajax id="ajaxsignup" method="POST" url="http://0.0.0.0:3000/api/clientes" params='' handle-as="json" on-response="respuestasignup"
             content-type="application/json" debounce-duration="300" on-error="_errorsignup"></iron-ajax>
+        <iron-ajax id="ajaxlogin" method="POST" url="http://0.0.0.0:3000/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
+            content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
         <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
         </app-location>
 
@@ -182,15 +184,23 @@
 
 
             respuestasignup(res) {
+                this.$.ajaxlogin.body = JSON.stringify({
+                    'email': this.user.email,
+                    'password': this.user.password
+                });
 
+                this.$.ajaxlogin.generateRequest();
+            }
+
+            respuestalogin(res) {
                 console.log(res);
                 this.user.id = res.detail.__data.response.userId;
                 this.user.token = res.detail.__data.response.id;
-
+                
                 localStorage.setItem("usr", this.user.email);
                 localStorage.setItem("token", this.user.token);
                 localStorage.setItem("usrId", this.user.id);
-                localStorage.setItem("usrN", this.user.nombre);
+                localStorage.setItem("usrN", null);
                 localStorage.setItem("usrLog", "true");
 
                 this.set('route.path', '/');
