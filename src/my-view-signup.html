@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="modulos/match-passwords-validator.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view-signup">
@@ -71,11 +72,17 @@
                 value="{{user.edad}}">
                 <div slot="suffix">años</div>
             </paper-input>
-            <paper-input required auto-validate error-message="Es necesario, complételo<" label="Altura" auto-validate allowed-pattern="[0-9]"
+            <paper-input required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate allowed-pattern="[0-9]"
                 value="{{user.altura}}">
                 <div slot="suffix">cm</div>
             </paper-input>
-            <paper-input type="password" label="password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+            <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
+            <paper-input type="password" label="Password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+            <paper-input type="password"
+            label="Confirmar"
+            auto-validate
+            validator="match-passwords-validator"
+            error-message="Es necesario que sean iguales" value="{{user.password2}}"></paper-input>
             <p> </p>
             <paper-button on-tap="signup" raised class="green">Registrarse</paper-button>
 
@@ -93,6 +100,8 @@
 
         <iron-ajax id="ajaxsignup" method="POST" url="http://0.0.0.0:3000/api/clientes" params='' handle-as="json" on-response="respuestasignup"
             content-type="application/json" debounce-duration="300" on-error="_errorsignup"></iron-ajax>
+        <iron-ajax id="ajaxlogin" method="POST" url="http://0.0.0.0:3000/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
+            content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
         <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
         </app-location>
 
@@ -129,8 +138,7 @@
                         value: function () {
                             return location.hostname
                         }
-                    }
-
+                    },
                 }
             }
             signup() {
@@ -148,7 +156,7 @@
                 if (this.user.password <= "") {
                     return
                 };
-                if (this.user.username <= "") {
+                if (this.user.nombre <= "") {
                     return
                 };
                 if (this.user.edad <= 0) {
@@ -157,42 +165,34 @@
                 if (this.user.altura <= 0) {
                     return
                 };
+                if (this.user.password != this.user.password2){
+                    return
+                }
 
                 this.$.ajaxsignup.generateRequest();
             }
-            respuestasignup(res) {
 
-                console.log(res);
-                this.user.id = res.detail.__data.response.userId;
-                this.user.token = res.detail.__data.response.id;
-
-                localStorage.setItem("usr", this.user.email);
-                localStorage.setItem("token", this.user.token);
-                localStorage.setItem("usrId", this.user.id);
-                localStorage.setItem("usrN", this.user.nombre);
-                localStorage.setItem("usrLog", "true");
-
-                this.set('route.path', '/');
-                this.set('routeData.page', 'historia');
-
+            _passValChange() {
+                console.log(this.user.password2);
+                console.log(this.user.password);
+                if (this.user.password2 == this.user.password) {
+                    this.passVal = true;
+                }
+                this.passVal = false;
+                console.log(this.passVal);
             }
+
+
+            respuestasignup(res) {
+                this.set('route.path', '/');
+                this.set('routeData.page', 'login');
+            }
+
             _errorsignup() {
                 this.$.papperDialog.open();
             }
             _cerrarPopup() {
                 this.$.papperDialog.close();
-            }
-            ready() {
-                super.ready();
-                var usuario = {
-                    email: "usuario"
-                }
-                localStorage.setItem("usr", usuario.email);
-                localStorage.setItem("usrLog", "false");
-                localStorage.setItem("token", null);
-                localStorage.setItem("usrId", null);
-                localStorage.setItem("usrN", null);
-                console.log("paso");
             }
 
         }

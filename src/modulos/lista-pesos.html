@@ -16,7 +16,7 @@
         </style>
 
         <div class="listbox">
-            <template is="dom-repeat" items="[[pesos]]">
+            <template id="lIt" is="dom-repeat" items="[[pesos]]">
                 <paper-item>
                     <paper-item-body two-line>
                         <div>[[item.peso]] Kg</div>
@@ -48,15 +48,21 @@
             addPeso(peso) {
                 console.log("Entro en AddPeso con: " + peso.id);
                 this.push('pesos', peso);
+                this.$.lIt.render();
             }
 
             removePeso(peso) {
                 var index = this.users.indexOf(user);
                 this.splice('pesos', index, 1);
+                this.$.lIt.render();
             }
 
             cleanPesos() {
                 this.pesos = [];
+                this.$.lIt.render();
+            }
+            renderL(){
+                this.$.lIt.render();
             }
         }
         customElements.define(ListaPesos.is, ListaPesos);
