@@ -123,8 +123,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return {
           arrayPesoChart: {
             type: Array
+          },
+          logged: {
+            type: String,
+            statePath: 'logged',
+            observer: 'loggedChanged'
           }
         }
+      }
+      loggedChanged() {
+        if (this.logged) {
+          this.refresh();
+        } else {
+          this.limpiarHistoria();
+        }
+      }
+      limpiarHistoria() {
+        this.arrayPesoChart = [];
+        this.$.googleChart.redraw();
+        this.$.listaPesos.pesos = [];
+      }
+      refresh() {
+        this.$.AjaxGet.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token=" + localStorage.getItem("token");
+        this.$.AjaxGetDesc.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token=" + localStorage.getItem("token");
+        this.$.AjaxGet.generateRequest();
+        this.$.AjaxGetDesc.generateRequest();
       }
       disconnectedCallback() {
         super.disconnectedCallback();
@@ -139,11 +162,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.inicio;
         this.addEventListener('iron-resize', e => this.$.googleChart.redraw());
         this.addEventListener('peso-remove', (e) => this.eliminarPeso(e));
-        this.$.AjaxGet.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token=" + localStorage.getItem("token");
-        this.$.AjaxGetDesc.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token=" + localStorage.getItem("token");
-        this.$.AjaxGet.generateRequest();
-        this.$.AjaxGetDesc.generateRequest();
-        console.log("Refresca2");
         this.redraw;
       }
       eliminarPeso(e) {

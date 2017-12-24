@@ -2,8 +2,25 @@
 <script src="../../node_modules/redux/dist/redux.js"></script>
 <script>
   // Setup a Redux store
-  const initial = {message: 'Hello, World!'};
-  const reducer = state => state;
+  const initial = { logged: false };
+  // const reducer = state => state;
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'LOGIN':
+        // ALWAYS return new state
+        return Object.assign({}, state, {
+          logged: true 
+        });
+      case 'LOGOFF':
+        // ALWAYS return new state
+        return Object.assign({}, state, {
+          logged: false 
+        });
+      // Return the state, nothing changed.
+      default:
+        return state;
+    }
+  };
   const store = Redux.createStore(reducer, initial);
 
   // Export the ReduxMixin
