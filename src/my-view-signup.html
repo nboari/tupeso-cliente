@@ -78,11 +78,8 @@
             </paper-input>
             <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
             <paper-input type="password" label="Password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
-            <paper-input type="password"
-            label="Confirmar"
-            auto-validate
-            validator="match-passwords-validator"
-            error-message="Es necesario que sean iguales" value="{{user.password2}}"></paper-input>
+            <paper-input type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
+                value="{{user.password2}}"></paper-input>
             <p> </p>
             <paper-button on-tap="signup" raised class="green">Registrarse</paper-button>
 
@@ -165,7 +162,7 @@
                 if (this.user.altura <= 0) {
                     return
                 };
-                if (this.user.password != this.user.password2){
+                if (this.user.password != this.user.password2) {
                     return
                 }
 

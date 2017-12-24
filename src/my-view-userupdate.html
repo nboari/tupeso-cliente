@@ -64,7 +64,7 @@
             <h2> Usuario </h2>
         </div>
         <div class="cardLogin">
-            <paper-input id="inputEmail"  disabled label="Email">
+            <paper-input id="inputEmail" disabled label="Email">
                 <iron-icon icon="mail" slot="prefix"></iron-icon>
             </paper-input>
             <paper-input id="inputNombre" required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
@@ -72,8 +72,8 @@
                 value="{{user.edad}}">
                 <div slot="suffix">años</div>
             </paper-input>
-            <paper-input id="inputAltura" required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate allowed-pattern="[0-9]"
-                value="{{user.altura}}">
+            <paper-input id="inputAltura" required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate
+                allowed-pattern="[0-9]" value="{{user.altura}}">
                 <div slot="suffix">cm</div>
             </paper-input>
             <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
@@ -103,8 +103,8 @@
             </iron-form>
         </paper-dialog>
 
-        <iron-ajax id="AjaxModifica" method="POST"  params='' handle-as="json" on-response="respuestaUpdate"
-            content-type="application/json" debounce-duration="300" on-error="_errorUpdate"></iron-ajax>
+        <iron-ajax id="AjaxModifica" method="POST" params='' handle-as="json" on-response="respuestaUpdate" content-type="application/json"
+            debounce-duration="300" on-error="_errorUpdate"></iron-ajax>
 
         <iron-ajax id="AjaxGet" on-response="handleAjaxGetResponse" on-error="handleAjaxGetError">
         </iron-ajax>
@@ -156,7 +156,7 @@
             ready() {
                 super.ready();
                 console.log("ready");
-               // this.refresh();
+                // this.refresh();
             }
             loggedChanged() {
                 console.log("loginUP");
@@ -170,21 +170,21 @@
                     "?access_token=" + localStorage.getItem("token");
                 this.$.AjaxGet.generateRequest();
             }
-       
+
             handleAjaxGetResponse(data) {
                 var response = data.detail.response;
                 console.log(response);
-                this.user.email = response.email; 
-                this.user.nombre = response.username; 
-                this.user.altura = response.altura; 
-                this.user.edad = response.edad; 
-                this.user.password = ""; 
-                this.user.password2 = ""; 
+                this.user.email = response.email;
+                this.user.nombre = response.username;
+                this.user.altura = response.altura;
+                this.user.edad = response.edad;
+                this.user.password = "";
+                this.user.password2 = "";
                 console.log(this.user);
-                this.$.inputEmail.value = this.user.email ;
-                this.$.inputEdad.value = this.user.edad ;
-                this.$.inputNombre.value = this.user.nombre ;
-                this.$.inputAltura.value = this.user.altura ;
+                this.$.inputEmail.value = this.user.email;
+                this.$.inputEdad.value = this.user.edad;
+                this.$.inputNombre.value = this.user.nombre;
+                this.$.inputAltura.value = this.user.altura;
                 this.$.inputPass1.value = "";
                 this.$.inputPass2.value = "";
             }
@@ -217,7 +217,8 @@
                 if (this.user.password != this.user.password2) {
                     return
                 }
-                this.$.AjaxModifica.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/replace?access_token=" + localStorage.getItem("token");
+                this.$.AjaxModifica.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
+                    "/replace?access_token=" + localStorage.getItem("token");
                 this.$.AjaxModifica.generateRequest();
             }
 
