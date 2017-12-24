@@ -1,5 +1,5 @@
 {
-  "name": "polymer-starter-kit",
+  "name": "tupeso",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "eslint": "^3.19.0",
@@ -11,5 +11,20 @@
     "lint:javascript": "eslint . --ext js,html --ignore-path .gitignore",
     "test": "polymer test",
     "test:integration": "polymer build # test that psk builds without error with the CLI"
-  }
+  },
+  "dependencies": {
+    "redux": "^3.7.2"
+  },
+  "description": "[![Build Status](https://travis-ci.org/PolymerElements/polymer-starter-kit.svg?branch=master)](https://travis-ci.org/PolymerElements/polymer-starter-kit)",
+  "version": "1.0.0",
+  "main": "service-worker.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nboari/tupeso-cliente.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/nboari/tupeso-cliente/issues"
+  },
+  "homepage": "https://github.com/nboari/tupeso-cliente#readme"
 }

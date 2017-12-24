@@ -22,6 +22,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="redux/redux-mixin.html">
+
 <link rel="import" href="my-icons.html">
 
 <link rel="import" href="my-view-login.html">
@@ -33,7 +35,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
 
     <style>
-       :host {
+      :host {
         --app-primary-color: #4285f4;
         --app-secondary-color: black;
         --app-drawer-width: 200px;
@@ -68,14 +70,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: black;
         font-weight: bold;
       }
-                  paper-button.green {
-                background-color: var(--paper-green-500);
-                color: white;
-            }
 
-            paper-button.green[active] {
-                background-color: var(--paper-red-500);
-            }
+      paper-button.green {
+        background-color: var(--paper-green-500);
+        color: white;
+      }
+
+      paper-button.green[active] {
+        background-color: var(--paper-red-500);
+      }
     </style>
 
     <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
@@ -90,10 +93,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]" opened="false">
         <app-toolbar>Menu</app-toolbar>
         <div hidden$="[[!SwLog]]">
-          <p> <h4>Hola!, {{email}}</h4></p>
+          <p>
+            <h4>Hola!, {{email}}</h4>
+          </p>
         </div>
         <div hidden$="[[SwLog]]">
-          <p> <h4>Bienvenido</h4></p>
+          <p>
+            <h4>Bienvenido</h4>
+          </p>
         </div>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <div hidden$="[[SwLog]]">
@@ -102,6 +109,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
           <div hidden$="[[!SwLog]]">
             <a name="historia" href="[[rootPath]]historia">Historia</a>
+            <a name="userupdate" href="[[rootPath]]userupdate">Usuario</a>
             <paper-button on-tap="_logoff" raised class="green">Logoff</paper-button>
           </div>
         </iron-selector>
@@ -123,6 +131,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <my-view-login name="login"></my-view-login>
           <my-view-signup name="signup"></my-view-signup>
           <my-view-historia name="historia"></my-view-historia>
+          <my-view-userupdate name="userupdate"></my-view-userupdate>
           <my-view-404 name="page404"></my-view-404>
         </iron-pages>
       </app-header-layout>
@@ -130,11 +139,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
-    class MyApp extends Polymer.Element {
+    class MyApp extends ReduxMixin(Polymer.Element) {
       static get is() {
         return 'my-app';
       }
-
 
       static get properties() {
         return {
@@ -169,8 +177,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
         }
-
-
       }
 
       _logoff() {
@@ -186,6 +192,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         } else {
           this.SwLog = true;
         };
+        this.dispatch({
+          type: 'LOGOFF'
+        });
         this.set('route.path', '/');
         this.set('routeData.page', 'login');
       }
