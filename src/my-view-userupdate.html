@@ -6,6 +6,8 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+
 <link rel="import" href="modulos/match-passwords-validator.html">
 <link rel="import" href="redux/redux-mixin.html">
 <link rel="import" href="shared-styles.html">
@@ -59,6 +61,16 @@
             paper-button.disabled {
                 color: white;
             }
+
+            paper-toggle-button.pink {
+                --paper-toggle-button-checked-bar-color: var(--paper-pink-500);
+                --paper-toggle-button-checked-button-color: var(--paper-pink-500);
+                --paper-toggle-button-checked-ink-color: var(--paper-pink-500);
+                --paper-toggle-button-unchecked-bar-color: var(--paper-indigo-900);
+                --paper-toggle-button-unchecked-button-color: var(--paper-indigo-900);
+                --paper-toggle-button-unchecked-ink-color: var(--paper-indigo-900);
+            }
+
         </style>
         <div class="card">
             <h2> Usuario </h2>
@@ -67,6 +79,7 @@
             <paper-input id="inputEmail" disabled label="Email">
                 <iron-icon icon="mail" slot="prefix"></iron-icon>
             </paper-input>
+            <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
             <paper-input id="inputNombre" required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
             <paper-input id="inputEdad" required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
                 value="{{user.edad}}">
@@ -164,11 +177,18 @@
             }
             limpiarHistoria() {
                 user = "";
+                this.sexoC = false;
             }
             refresh() {
                 this.$.AjaxGet.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
                     "?access_token=" + localStorage.getItem("token");
                 this.$.AjaxGet.generateRequest();
+            }
+            _toggleSexo(){
+                if (this.sexoC == false) { 
+                this.sexo = "Masculino"} 
+                if (this.sexoC == true) { 
+                this.sexo = "Femenino"} 
             }
 
             handleAjaxGetResponse(data) {
@@ -187,6 +207,8 @@
                 this.$.inputAltura.value = this.user.altura;
                 this.$.inputPass1.value = "";
                 this.$.inputPass2.value = "";
+                this.sexoC = response.sexo;
+                this._toggleSexo();
             }
 
 
@@ -195,6 +217,7 @@
                     'password': this.user.password,
                     'email': this.user.email,
                     'edad': this.user.edad,
+                    'sexo': this.user.sexo,
                     'username': this.user.nombre,
                     'altura': this.user.altura
                 });
