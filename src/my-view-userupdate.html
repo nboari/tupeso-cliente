@@ -70,7 +70,6 @@
                 --paper-toggle-button-unchecked-button-color: var(--paper-indigo-900);
                 --paper-toggle-button-unchecked-ink-color: var(--paper-indigo-900);
             }
-
         </style>
         <div class="card">
             <h2> Usuario </h2>
@@ -104,14 +103,6 @@
             <iron-form id="formPeso">
                 <form action="/foo" method="get">
                     <paper-button class="green" raised on-click="_cerrarPopup">Ok</paper-button>
-                </form>
-            </iron-form>
-        </paper-dialog>
-        <paper-dialog id="papperDialogOK">
-            <h2>Usuario modificado ok</h2>
-            <iron-form id="formPeso2">
-                <form action="/foo" method="get">
-                    <paper-button class="green" raised on-click="_cerrarPopupOK">Ok</paper-button>
                 </form>
             </iron-form>
         </paper-dialog>
@@ -184,11 +175,16 @@
                     "?access_token=" + localStorage.getItem("token");
                 this.$.AjaxGet.generateRequest();
             }
-            _toggleSexo(){
-                if (this.sexoC == false) { 
-                this.sexo = "Masculino"} 
-                if (this.sexoC == true) { 
-                this.sexo = "Femenino"} 
+            _toggleSexo() {
+                if (this.sexoC == null) {
+                    this.sexoC = false;
+                }
+                if (this.sexoC == false) {
+                    this.sexo = "Masculino"
+                }
+                if (this.sexoC == true) {
+                    this.sexo = "Femenino"
+                }
             }
 
             handleAjaxGetResponse(data) {
@@ -207,6 +203,9 @@
                 this.$.inputAltura.value = this.user.altura;
                 this.$.inputPass1.value = "";
                 this.$.inputPass2.value = "";
+                if (response.sexo == null) {
+                    response.sexo = false
+                };
                 this.sexoC = response.sexo;
                 this._toggleSexo();
             }
@@ -217,7 +216,7 @@
                     'password': this.user.password,
                     'email': this.user.email,
                     'edad': this.user.edad,
-                    'sexo': this.user.sexo,
+                    'sexo': this.sexoC,
                     'username': this.user.nombre,
                     'altura': this.user.altura
                 });
@@ -257,7 +256,23 @@
 
 
             respuestaUpdate(res) {
-                this.$.papperDialogOK.open();
+                var usuario = {
+                    email: "usuario"
+                }
+                localStorage.setItem("usr", usuario.email);
+                localStorage.setItem("usrLog", "false");
+                localStorage.setItem("token", null);
+                localStorage.setItem("usrId", null);
+                if (localStorage.getItem("usrLog") == "false") {
+                    this.SwLog = false;
+                } else {
+                    this.SwLog = true;
+                };
+                this.dispatch({
+                    type: 'LOGOFF'
+                });
+                this.set('route.path', '/');
+                this.set('routeData.page', 'login');
             }
 
             _errorUpdate() {
@@ -265,9 +280,6 @@
             }
             _cerrarPopup() {
                 this.$.papperDialog.close();
-            }
-            _cerrarPopupOK() {
-                this.$.papperDialogOK.close();
             }
 
         }

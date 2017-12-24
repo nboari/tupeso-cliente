@@ -77,6 +77,7 @@
                 <iron-icon icon="mail" slot="prefix"></iron-icon>
                 <div slot="suffix">@email.com</div>
             </paper-input>
+            <p></p>
             <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
             <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
             <paper-input required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
@@ -149,7 +150,16 @@
                     },
                 }
             }
+            ready() {
+                super.ready();
+                this._toggleSexo();
+                console.log("ready");
+                // this.refresh();
+            }
             _toggleSexo(){
+                if (this.sexoC == null ) { 
+                   this.sexoC = false;
+                }
                 if (this.sexoC == false) { 
                 this.sexo = "Masculino"} 
                 if (this.sexoC == true) { 
@@ -161,7 +171,7 @@
                     'password': this.user.password,
                     'edad': this.user.edad,
                     'altura': this.user.altura,
-                    'sexo': this.user.sexo,
+                    'sexo': this.sexoC,
                     'username': this.user.nombre
                 });
 
