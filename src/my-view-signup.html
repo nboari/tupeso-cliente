@@ -6,6 +6,8 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+
 <link rel="import" href="modulos/match-passwords-validator.html">
 <link rel="import" href="shared-styles.html">
 
@@ -58,6 +60,14 @@
             paper-button.disabled {
                 color: white;
             }
+            paper-toggle-button.pink {
+                --paper-toggle-button-checked-bar-color: var(--paper-pink-500);
+                --paper-toggle-button-checked-button-color: var(--paper-pink-500);
+                --paper-toggle-button-checked-ink-color: var(--paper-pink-500);
+                --paper-toggle-button-unchecked-bar-color: var(--paper-indigo-900);
+                --paper-toggle-button-unchecked-button-color: var(--paper-indigo-900);
+                --paper-toggle-button-unchecked-ink-color: var(--paper-indigo-900);
+            }
         </style>
         <div class="card">
             <h2> Signup </h2>
@@ -67,6 +77,8 @@
                 <iron-icon icon="mail" slot="prefix"></iron-icon>
                 <div slot="suffix">@email.com</div>
             </paper-input>
+            <p></p>
+            <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
             <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
             <paper-input required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
                 value="{{user.edad}}">
@@ -138,12 +150,28 @@
                     },
                 }
             }
+            ready() {
+                super.ready();
+                this._toggleSexo();
+                console.log("ready");
+                // this.refresh();
+            }
+            _toggleSexo(){
+                if (this.sexoC == null ) { 
+                   this.sexoC = false;
+                }
+                if (this.sexoC == false) { 
+                this.sexo = "Masculino"} 
+                if (this.sexoC == true) { 
+                this.sexo = "Femenino"} 
+            }
             signup() {
                 this.$.ajaxsignup.body = JSON.stringify({
                     'email': this.user.email,
                     'password': this.user.password,
                     'edad': this.user.edad,
                     'altura': this.user.altura,
+                    'sexo': this.sexoC,
                     'username': this.user.nombre
                 });
 
