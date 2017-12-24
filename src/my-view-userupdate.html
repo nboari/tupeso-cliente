@@ -9,9 +9,10 @@
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="modulos/match-passwords-validator.html">
+<link rel="import" href="redux/redux-mixin.html">
 <link rel="import" href="shared-styles.html">
 
-<dom-module id="my-view-signup">
+<dom-module id="my-view-userupdate">
     <template>
         <style include="shared-styles">
              :host {
@@ -60,6 +61,7 @@
             paper-button.disabled {
                 color: white;
             }
+
             paper-toggle-button.pink {
                 --paper-toggle-button-checked-bar-color: var(--paper-pink-500);
                 --paper-toggle-button-checked-button-color: var(--paper-pink-500);
@@ -70,36 +72,34 @@
             }
         </style>
         <div class="card">
-            <h2> Signup </h2>
+            <h2> Usuario </h2>
         </div>
         <div class="cardLogin">
-            <paper-input required auto-validate error-message="Es necesario, complételo" label="Email" value="{{user.email}}">
+            <paper-input id="inputEmail" disabled label="Email">
                 <iron-icon icon="mail" slot="prefix"></iron-icon>
-                <div slot="suffix">@email.com</div>
             </paper-input>
-            <p></p>
             <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
-            <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
-            <paper-input required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
+            <paper-input id="inputNombre" required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
+            <paper-input id="inputEdad" required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
                 value="{{user.edad}}">
                 <div slot="suffix">años</div>
             </paper-input>
-            <paper-input required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate allowed-pattern="[0-9]"
-                value="{{user.altura}}">
+            <paper-input id="inputAltura" required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate
+                allowed-pattern="[0-9]" value="{{user.altura}}">
                 <div slot="suffix">cm</div>
             </paper-input>
             <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
-            <paper-input type="password" label="Password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
-            <paper-input type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
+            <paper-input id="inputPass1" type="password" label="Nueva password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+            <paper-input id="inputPass2" type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
                 value="{{user.password2}}"></paper-input>
             <p> </p>
-            <paper-button on-tap="signup" raised class="green">Registrarse</paper-button>
+            <paper-button on-tap="modificar" raised class="green">Modificar</paper-button>
 
         </div>
 
         <paper-dialog id="papperDialog">
             <h2>Usuario ya registrado</h2>
-            <h0>Por favor, intente con otro email</h0>
+            <h0>Por favor, actualice los datos y reintente </h0>
             <iron-form id="formPeso">
                 <form action="/foo" method="get">
                     <paper-button class="green" raised on-click="_cerrarPopup">Ok</paper-button>
@@ -107,10 +107,12 @@
             </iron-form>
         </paper-dialog>
 
-        <iron-ajax id="ajaxsignup" method="POST" url="http://0.0.0.0:3000/api/clientes" params='' handle-as="json" on-response="respuestasignup"
-            content-type="application/json" debounce-duration="300" on-error="_errorsignup"></iron-ajax>
-        <iron-ajax id="ajaxlogin" method="POST" url="http://0.0.0.0:3000/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
-            content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
+        <iron-ajax id="AjaxModifica" method="POST" params='' handle-as="json" on-response="respuestaUpdate" content-type="application/json"
+            debounce-duration="300" on-error="_errorUpdate"></iron-ajax>
+
+        <iron-ajax id="AjaxGet" on-response="handleAjaxGetResponse" on-error="handleAjaxGetError">
+        </iron-ajax>
+
         <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
         </app-location>
 
@@ -120,9 +122,9 @@
     </template>
 
     <script>
-        class MyViewSignup extends Polymer.Element {
+        class MyViewUserupdate extends ReduxMixin(Polymer.Element) {
             static get is() {
-                return 'my-view-signup';
+                return 'my-view-userupdate';
             }
             static get properties() {
                 return {
@@ -148,31 +150,75 @@
                             return location.hostname
                         }
                     },
+                    logged: {
+                        type: String,
+                        statePath: 'logged',
+                        observer: 'loggedChanged'
+                    }
                 }
             }
             ready() {
                 super.ready();
-                this._toggleSexo();
                 console.log("ready");
                 // this.refresh();
             }
-            _toggleSexo(){
-                if (this.sexoC == null ) { 
-                   this.sexoC = false;
-                }
-                if (this.sexoC == false) { 
-                this.sexo = "Masculino"} 
-                if (this.sexoC == true) { 
-                this.sexo = "Femenino"} 
+            loggedChanged() {
+                console.log("loginUP");
+                this.refresh();
             }
-            signup() {
-                this.$.ajaxsignup.body = JSON.stringify({
-                    'email': this.user.email,
+            limpiarHistoria() {
+                user = "";
+                this.sexoC = false;
+            }
+            refresh() {
+                this.$.AjaxGet.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
+                    "?access_token=" + localStorage.getItem("token");
+                this.$.AjaxGet.generateRequest();
+            }
+            _toggleSexo() {
+                if (this.sexoC == null) {
+                    this.sexoC = false;
+                }
+                if (this.sexoC == false) {
+                    this.sexo = "Masculino"
+                }
+                if (this.sexoC == true) {
+                    this.sexo = "Femenino"
+                }
+            }
+
+            handleAjaxGetResponse(data) {
+                var response = data.detail.response;
+                console.log(response);
+                this.user.email = response.email;
+                this.user.nombre = response.username;
+                this.user.altura = response.altura;
+                this.user.edad = response.edad;
+                this.user.password = "";
+                this.user.password2 = "";
+                console.log(this.user);
+                this.$.inputEmail.value = this.user.email;
+                this.$.inputEdad.value = this.user.edad;
+                this.$.inputNombre.value = this.user.nombre;
+                this.$.inputAltura.value = this.user.altura;
+                this.$.inputPass1.value = "";
+                this.$.inputPass2.value = "";
+                if (response.sexo == null) {
+                    response.sexo = false
+                };
+                this.sexoC = response.sexo;
+                this._toggleSexo();
+            }
+
+
+            modificar() {
+                this.$.AjaxModifica.body = JSON.stringify({
                     'password': this.user.password,
+                    'email': this.user.email,
                     'edad': this.user.edad,
-                    'altura': this.user.altura,
                     'sexo': this.sexoC,
-                    'username': this.user.nombre
+                    'username': this.user.nombre,
+                    'altura': this.user.altura
                 });
 
                 if (this.user.email <= "") {
@@ -193,8 +239,9 @@
                 if (this.user.password != this.user.password2) {
                     return
                 }
-
-                this.$.ajaxsignup.generateRequest();
+                this.$.AjaxModifica.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
+                    "/replace?access_token=" + localStorage.getItem("token");
+                this.$.AjaxModifica.generateRequest();
             }
 
             _passValChange() {
@@ -208,12 +255,27 @@
             }
 
 
-            respuestasignup(res) {
+            respuestaUpdate(res) {
+                var usuario = {
+                    email: "usuario"
+                }
+                localStorage.setItem("usr", usuario.email);
+                localStorage.setItem("usrLog", "false");
+                localStorage.setItem("token", null);
+                localStorage.setItem("usrId", null);
+                if (localStorage.getItem("usrLog") == "false") {
+                    this.SwLog = false;
+                } else {
+                    this.SwLog = true;
+                };
+                this.dispatch({
+                    type: 'LOGOFF'
+                });
                 this.set('route.path', '/');
                 this.set('routeData.page', 'login');
             }
 
-            _errorsignup() {
+            _errorUpdate() {
                 this.$.papperDialog.open();
             }
             _cerrarPopup() {
@@ -222,6 +284,6 @@
 
         }
 
-        window.customElements.define(MyViewSignup.is, MyViewSignup);
+        window.customElements.define(MyViewUserupdate.is, MyViewUserupdate);
     </script>
 </dom-module>

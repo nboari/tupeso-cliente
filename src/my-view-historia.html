@@ -183,10 +183,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       handleAjaxPostResponse(data) {
         console.log("reshandleAjaxPostResponse");
-        this.$.AjaxGet.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token=" + localStorage.getItem("token")
-        this.$.AjaxGetDesc.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token=" + localStorage.getItem("token")
-        this.$.AjaxGet.generateRequest();
-        this.$.AjaxGetDesc.generateRequest();
+        this.refresh();
       }
       handleAjaxPostError() {
         console.log("handleAjaxPostError");
@@ -194,10 +191,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       handleAjaxDeleteResponse(data) {
         console.log("reshandleAjaxDeleteResponse");
         console.log(data);
-        this.$.AjaxGet.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?access_token=" + localStorage.getItem("token")
-        this.$.AjaxGetDesc.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token=" + localStorage.getItem("token")
-        this.$.AjaxGet.generateRequest();
-        this.$.AjaxGetDesc.generateRequest();
+        this.refresh();
       }
       handleAjaxDeleteError() {
         console.log("handleAjaxPostError");
