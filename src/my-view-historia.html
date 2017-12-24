@@ -116,8 +116,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
-    // class MyViewHistoria extends Polymer.mixinBehaviors(Polymer.IronResizableBehavior, Polymer.Element) {
-    class MyViewHistoria extends ReduxMixin(Polymer.Element) {
+    class MyViewHistoria extends ReduxMixin(Polymer.mixinBehaviors(Polymer.IronResizableBehavior, Polymer.Element)) {
       static get is() { return 'my-view-historia'; }
       static get properties() {
         return {
