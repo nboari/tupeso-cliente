@@ -1,0 +1,253 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">>
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="modulos/match-passwords-validator.html">
+<link rel="import" href="redux/redux-mixin.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view-userupdate">
+    <template>
+        <style include="shared-styles">
+             :host {
+                display: block;
+                padding: 10px;
+            }
+
+            a,
+            .card {
+                text-decoration-line: none;
+            }
+
+            h1 {
+                font-size: 1em;
+            }
+
+            h3 {
+                font-size: 0.8em;
+            }
+
+            .card>* {
+                margin: 0px;
+            }
+
+            paper-input {
+                max-width: 400px;
+                margin: auto;
+            }
+
+            paper-button {
+                font-family: 'Roboto', 'Noto', sans-serif;
+                font-weight: normal;
+                font-size: 14px;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            paper-button.green {
+                background-color: var(--paper-green-500);
+                color: white;
+            }
+
+            paper-button.green[active] {
+                background-color: var(--paper-red-500);
+            }
+
+            paper-button.disabled {
+                color: white;
+            }
+        </style>
+        <div class="card">
+            <h2> Usuario </h2>
+        </div>
+        <div class="cardLogin">
+            <paper-input id="inputEmail"  disabled label="Email">
+                <iron-icon icon="mail" slot="prefix"></iron-icon>
+            </paper-input>
+            <paper-input id="inputNombre" required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
+            <paper-input id="inputEdad" required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
+                value="{{user.edad}}">
+                <div slot="suffix">años</div>
+            </paper-input>
+            <paper-input id="inputAltura" required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate allowed-pattern="[0-9]"
+                value="{{user.altura}}">
+                <div slot="suffix">cm</div>
+            </paper-input>
+            <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
+            <paper-input id="inputPass1" type="password" label="Nueva password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+            <paper-input id="inputPass2" type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
+                value="{{user.password2}}"></paper-input>
+            <p> </p>
+            <paper-button on-tap="modificar" raised class="green">Modificar</paper-button>
+
+        </div>
+
+        <paper-dialog id="papperDialog">
+            <h2>Usuario ya registrado</h2>
+            <h0>Por favor, actualice los datos y reintente </h0>
+            <iron-form id="formPeso">
+                <form action="/foo" method="get">
+                    <paper-button class="green" raised on-click="_cerrarPopup">Ok</paper-button>
+                </form>
+            </iron-form>
+        </paper-dialog>
+        <paper-dialog id="papperDialogOK">
+            <h2>Usuario modificado ok</h2>
+            <iron-form id="formPeso2">
+                <form action="/foo" method="get">
+                    <paper-button class="green" raised on-click="_cerrarPopupOK">Ok</paper-button>
+                </form>
+            </iron-form>
+        </paper-dialog>
+
+        <iron-ajax id="AjaxModifica" method="POST"  params='' handle-as="json" on-response="respuestaUpdate"
+            content-type="application/json" debounce-duration="300" on-error="_errorUpdate"></iron-ajax>
+
+        <iron-ajax id="AjaxGet" on-response="handleAjaxGetResponse" on-error="handleAjaxGetError">
+        </iron-ajax>
+
+        <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
+        </app-location>
+
+
+        <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}">
+        </app-route>
+    </template>
+
+    <script>
+        class MyViewUserupdate extends ReduxMixin(Polymer.Element) {
+            static get is() {
+                return 'my-view-userupdate';
+            }
+            static get properties() {
+                return {
+                    /**
+                     * Description for prop
+                     */
+                    user: {
+                        type: Object,
+                        value: function () {
+                            return {
+                                email: "",
+                                token: "",
+                                id: "",
+                                nombre: "",
+                                edad: "",
+                                altura: ""
+                            }
+                        }
+                    },
+                    host: {
+                        type: String,
+                        value: function () {
+                            return location.hostname
+                        }
+                    },
+                    logged: {
+                        type: String,
+                        statePath: 'logged',
+                        observer: 'loggedChanged'
+                    }
+                }
+            }
+            ready() {
+                super.ready();
+                console.log("ready");
+               // this.refresh();
+            }
+            loggedChanged() {
+                console.log("loginUP");
+                this.refresh();
+            }
+            limpiarHistoria() {
+                user = "";
+            }
+            refresh() {
+                this.$.AjaxGet.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
+                    "?access_token=" + localStorage.getItem("token");
+                this.$.AjaxGet.generateRequest();
+            }
+       
+            handleAjaxGetResponse(data) {
+                var response = data.detail.response;
+                console.log(response);
+                this.user.email = response.email; 
+                this.user.nombre = response.username; 
+                this.user.altura = response.altura; 
+                this.user.edad = response.edad; 
+                this.user.password = ""; 
+                this.user.password2 = ""; 
+                console.log(this.user);
+                this.$.inputEmail.value = this.user.email ;
+                this.$.inputEdad.value = this.user.edad ;
+                this.$.inputNombre.value = this.user.nombre ;
+                this.$.inputAltura.value = this.user.altura ;
+                this.$.inputPass1.value = "";
+                this.$.inputPass2.value = "";
+            }
+
+
+            modificar() {
+                this.$.AjaxModifica.body = JSON.stringify({
+                    'password': this.user.password,
+                    'email': this.user.email,
+                    'edad': this.user.edad,
+                    'username': this.user.nombre,
+                    'altura': this.user.altura
+                });
+
+                if (this.user.email <= "") {
+                    return
+                };
+                if (this.user.password <= "") {
+                    return
+                };
+                if (this.user.nombre <= "") {
+                    return
+                };
+                if (this.user.edad <= 0) {
+                    return
+                };
+                if (this.user.altura <= 0) {
+                    return
+                };
+                if (this.user.password != this.user.password2) {
+                    return
+                }
+                this.$.AjaxModifica.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/replace?access_token=" + localStorage.getItem("token");
+                this.$.AjaxModifica.generateRequest();
+            }
+
+            _passValChange() {
+                console.log(this.user.password2);
+                console.log(this.user.password);
+                if (this.user.password2 == this.user.password) {
+                    this.passVal = true;
+                }
+                this.passVal = false;
+                console.log(this.passVal);
+            }
+
+
+            respuestaUpdate(res) {
+                this.$.papperDialogOK.open();
+            }
+
+            _errorUpdate() {
+                this.$.papperDialog.open();
+            }
+            _cerrarPopup() {
+                this.$.papperDialog.close();
+            }
+            _cerrarPopupOK() {
+                this.$.papperDialogOK.close();
+            }
+
+        }
+
+        window.customElements.define(MyViewUserupdate.is, MyViewUserupdate);
+    </script>
+</dom-module>
