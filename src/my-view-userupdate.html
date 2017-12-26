@@ -7,7 +7,7 @@
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
-
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="modulos/match-passwords-validator.html">
 <link rel="import" href="redux/redux-mixin.html">
 <link rel="import" href="shared-styles.html">
@@ -50,7 +50,7 @@
             }
 
             paper-button.green {
-                background-color: var(--paper-green-500);
+                background-color: #ff6f00;
                 color: white;
             }
 
@@ -70,32 +70,34 @@
                 --paper-toggle-button-unchecked-button-color: var(--paper-indigo-900);
                 --paper-toggle-button-unchecked-ink-color: var(--paper-indigo-900);
             }
-        </style>
-        <div class="card">
-            <h2> Usuario </h2>
-        </div>
-        <div class="cardLogin">
-            <paper-input id="inputEmail" disabled label="Email">
-                <iron-icon icon="mail" slot="prefix"></iron-icon>
-            </paper-input>
-            <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
-            <paper-input id="inputNombre" required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
-            <paper-input id="inputEdad" required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
-                value="{{user.edad}}">
-                <div slot="suffix">años</div>
-            </paper-input>
-            <paper-input id="inputAltura" required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate
-                allowed-pattern="[0-9]" value="{{user.altura}}">
-                <div slot="suffix">cm</div>
-            </paper-input>
-            <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
-            <paper-input id="inputPass1" type="password" label="Nueva password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
-            <paper-input id="inputPass2" type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
-                value="{{user.password2}}"></paper-input>
-            <p> </p>
-            <paper-button on-tap="modificar" raised class="green">Modificar</paper-button>
 
-        </div>
+            paper-card.white {
+                --paper-card-header-color: white;
+            }
+        </style>
+        <paper-card heading="Usuario" image="../images/signup-bk.jpg" class="white">
+            <div class="cardLogin">
+                <paper-input id="inputEmail" disabled label="Email">
+                    <iron-icon icon="mail" slot="prefix"></iron-icon>
+                </paper-input>
+                <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
+                <paper-input id="inputNombre" required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
+                <paper-input id="inputEdad" required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
+                    value="{{user.edad}}">
+                    <div slot="suffix">años</div>
+                </paper-input>
+                <paper-input id="inputAltura" required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate
+                    allowed-pattern="[0-9]" value="{{user.altura}}">
+                    <div slot="suffix">cm</div>
+                </paper-input>
+                <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
+                <paper-input id="inputPass1" type="password" label="Nueva password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+                <paper-input id="inputPass2" type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
+                    value="{{user.password2}}"></paper-input>
+                <p> </p>
+                <paper-button on-tap="modificar" raised class="green">Modificar</paper-button>
+            </div>
+        </paper-card>
 
         <paper-dialog id="papperDialog">
             <h2>Usuario ya registrado</h2>

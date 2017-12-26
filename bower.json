@@ -31,7 +31,9 @@
     "iron-localstorage": "PolymerElements/iron-localstorage#^2.0.0",
     "iron-validator-behavior": "PolymerElements/iron-validator-behavior#^2.0.0",
     "polymer-redux": "^1.0.5",
-    "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0"
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0",
+    "paper-toolbar": "PolymerElements/paper-toolbar#^2.0.0",
+    "paper-card": "PolymerElements/paper-card#^2.0.0"
   },
   "resolutions": {
     "polymer": "^2.0.0",

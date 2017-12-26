@@ -13,27 +13,39 @@
                 margin: auto;
                 width: var(--lista-pesos-widht);
             }
+
+            .card {
+                margin: 2px;
+                padding: 2px;
+                color: #757575;
+                border-radius: 5px;
+                background-color: #fffde7;
+                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+            }
         </style>
 
         <div class="listbox">
             <template id="lIt" is="dom-repeat" items="[[pesos]]">
-                <paper-item>
-                    <paper-item-body two-line>
-                        <div>[[item.peso]] Kg</div>
-                        <div secondary>[[item.fecha]]</div>
-                    </paper-item-body>
-                    
-                    <paper-icon-button ident$="[[item]]" 
-                        on-click="_onTrash" icon="delete" alt="Eliminalo!">
-                    </paper-icon-button>
-                </paper-item>
+                <div class="card">
+                    <paper-item>
+                        <paper-item-body two-line>
+                            <div>[[item.peso]] Kg</div>
+                            <div secondary>[[item.fecha]]</div>
+                        </paper-item-body>
+
+                        <paper-icon-button ident$="[[item]]" on-click="_onTrash" icon="delete" alt="Eliminalo!">
+                        </paper-icon-button>
+                    </paper-item>
+                </div>
             </template>
-        </div>  
+        </div>
     </template>
 
     <script>
         class ListaPesos extends Polymer.Element {
-            static get is() { return 'lista-pesos' }
+            static get is() {
+                return 'lista-pesos'
+            }
             static get properties() {
                 return {
                     pesos: Array
@@ -42,7 +54,13 @@
 
             _onTrash(e) {
                 var peso = e.target.getAttribute('ident');
-                this.dispatchEvent(new CustomEvent('peso-remove', {bubbles: true, composed: true, detail: {peso: peso}}));
+                this.dispatchEvent(new CustomEvent('peso-remove', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        peso: peso
+                    }
+                }));
             }
 
             addPeso(peso) {
@@ -61,7 +79,7 @@
                 this.pesos = [];
                 this.$.lIt.render();
             }
-            renderL(){
+            renderL() {
                 this.$.lIt.render();
             }
         }
