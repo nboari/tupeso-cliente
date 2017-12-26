@@ -6,13 +6,15 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+
 <link rel="import" href="redux/redux-mixin.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view-login">
     <template>
         <style include="shared-styles">
-            :host {
+             :host {
                 display: block;
                 padding: 10px;
             }
@@ -34,6 +36,10 @@
                 margin: 0px;
             }
 
+            paper-card {
+                max-width: 500px;
+            }
+
             paper-input {
                 max-width: 400px;
                 margin: auto;
@@ -47,7 +53,7 @@
             }
 
             paper-button.green {
-                background-color: var(--paper-green-500);
+                background-color: #ff6f00;
                 color: white;
             }
 
@@ -58,22 +64,26 @@
             paper-button.disabled {
                 color: white;
             }
-        </style>
-        <div class="card">
-            <h2> Login </h2>
-        </div>
-        <div class="cardLogin">
-            <paper-input required auto-validate error-message="Es necesario, complételo" label="email" value="{{user.email}}">
-                <iron-icon icon="mail" slot="prefix"></iron-icon>
-            </paper-input>
-            <paper-input type="password" label="password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
-            <p> </p>
-            <paper-button on-tap="loguearse" raised class="green">Ingresar</paper-button>
 
-        </div>
+            paper-card.white {
+                --paper-card-header-color: white;
+            }
+        </style>
+
+        <paper-card heading="Login" image="../images/login-bk.jpg" class="white">
+            <div class="cardLogin">
+                <paper-input required auto-validate error-message="Es necesario, complételo" label="email" value="{{user.email}}">
+                    <iron-icon icon="mail" slot="prefix"></iron-icon>
+                </paper-input>
+                <paper-input type="password" label="password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+                <p> </p>
+                <paper-button on-tap="loguearse" raised class="green">Ingresar</paper-button>
+
+            </div>
+        </paper-card>
 
         <paper-dialog id="papperDialog">
-            <h2>Usuario/password inexistente</h2>
+            <h2>Usuario inexistente</h2>
             <h0>Si no posee cuenta, regístrese.</h0>
             <iron-form id="formPeso">
                 <form action="/foo" method="get">

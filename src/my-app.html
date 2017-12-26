@@ -20,8 +20,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="redux/redux-mixin.html">
 
 <link rel="import" href="my-icons.html">
@@ -35,8 +38,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
 
     <style>
-      :host {
-        --app-primary-color: #4285f4;
+       :host {
+        --app-primary-color: #ff8f00;
         --app-secondary-color: black;
         --app-drawer-width: 200px;
       }
@@ -72,15 +75,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       paper-button.green {
-        background-color: var(--paper-green-500);
+        background-color: #ff6f00;
         color: white;
       }
 
       paper-button.green[active] {
         background-color: var(--paper-red-500);
       }
+
+      ;
+      .centrar {
+        display: table;
+        margin: 0 auto;
+        width: 50%;
+      }
+
+      .left {
+        float: left;
+        display: table;
+        margin: 0 auto;
+        width: 50%;
+      }
     </style>
 
+    <style is="custom-style">
+      paper-toolbar {
+        --paper-toolbar-background: #ff8f00;
+      }
+    </style>
     <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
     </app-location>
 
@@ -91,26 +113,65 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- Content narrow="{{narrow}}">-->
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]" opened="false">
-        <app-toolbar>Menu</app-toolbar>
-        <div hidden$="[[!SwLog]]">
-          <p>
-            <h4>Hola!, {{email}}</h4>
-          </p>
-        </div>
-        <div hidden$="[[SwLog]]">
-          <p>
-            <h4>Bienvenido</h4>
-          </p>
-        </div>
+        <paper-toolbar class="tall" class="red">
+          <paper-icon-button slot="top" icon="menu" drawer-toggle></paper-icon-button>
+          <div slot="top">
+            <h4>Menu</h4>
+          </div>
+          <div slot="bottom">
+            <div hidden$="[[!SwLog]]">
+              <p>
+                <font size="2">{{email}}</font>
+              </p>
+            </div>
+            <div hidden$="[[SwLog]]">
+              <p>
+                <font size="3">Bienvenido</font>
+              </p>
+            </div>
+          </div>
+        </paper-toolbar>
+
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <div hidden$="[[SwLog]]">
-            <a name="login" href="[[rootPath]]login">Login</a>
-            <a name="signup" href="[[rootPath]]signup">Signup</a>
+            <div>
+              <a icon="menu" name="login" href="[[rootPath]]login"> Login
+                <div class="left">
+                  <iron-icon icon="icons:verified-user"></iron-icon>
+                </div>
+              </a>
+            </div>
+            <hr></hr>
+            <div>
+              <a name="signup" href="[[rootPath]]signup"> Signup
+                <div class="left">
+                  <iron-icon icon="social:person-add"></iron-icon>
+                </div>
+              </a>
+            </div>
+            <hr></hr>
           </div>
           <div hidden$="[[!SwLog]]">
-            <a name="historia" href="[[rootPath]]historia">Historia</a>
-            <a name="userupdate" href="[[rootPath]]userupdate">Usuario</a>
-            <paper-button on-tap="_logoff" raised class="green">Logoff</paper-button>
+            <div>
+              <a name="historia" href="[[rootPath]]historia"> Historia
+                <div class="left">
+                  <iron-icon icon="icons:history"></iron-icon>
+                </div>
+              </a>
+            </div>
+            <hr></hr>
+            <div>
+              <a name="userupdate" href="[[rootPath]]userupdate"> Usuario
+                <div class="left">
+                  <iron-icon icon="social:person"></iron-icon>
+                </div>
+              </a>
+            </div>
+            <hr></hr>
+            <div class="centrar">
+              <paper-button on-tap="_logoff" raised class="green">Logoff</paper-button>
+            </div>
+            <hr></hr>
           </div>
         </iron-selector>
       </app-drawer>
