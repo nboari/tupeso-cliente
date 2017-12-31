@@ -15,8 +15,10 @@
     <template>
         <style include="shared-styles">
             :host {
-                display:block;
-                padding: 10px;
+                display:flex;
+                align-items: center;
+                justify-content: center;
+                min-height: calc(100vh - 64px);     
             }
 
             a,
@@ -37,6 +39,7 @@
             }
 
             paper-card {
+                transform: translate(0,-64px);
                 display: block;
                 width: 100%;
                 max-width: 500px;
