@@ -27,10 +27,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="my-view-historia">
   <template>
     <style include="shared-styles">
-       :host {
+      :host {
         display: block;
-        padding: 5px;
-        --lista-pesos-widht: 95%;
+        padding: 10px;
       }
 
       google-chart {
@@ -93,7 +92,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       paper-card {
+        display: block;
+        width: 100%;
         max-width: 800px;
+        margin: 0 auto;
       }
 
       paper-card.white {
@@ -104,36 +106,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         position: relative;
       }
 
-      .img {
-        position: relative;
-        width: 500px;
-        top: 0px;
-        left: 0px;
-      }
-
       .img2 {
         position: absolute;
         top: 0px;
         right: 0px;
       }
+
+      .paperpad10 {
+        margin-top: 12px;
+      }
     </style>
 
-    <paper-card heading="Evolución" image="../images/evolucion-bk.jpg" class="white img" >
+    <paper-card heading="Evolución" image="../images/evolucion-bk.jpg" class="white">
       <google-chart id='googleChart' type='line' options='{"legend":"none"}' cols='[{"label":"Fecha", "type":"string"}, {"label":"Dias", "type":"number"}]'
         rows=[[arrayPesoChart]]>
       </google-chart>
     </paper-card>
 
-    <div class="cardH">
-
-      <paper-card heading="Listado de pesos" image="../images/signup-bk.jpg" class="white">
-        <div class="cardLogin">
-          <lista-pesos id="listaPesos" pesos="[]">
-          </lista-pesos>
-        </div>
-      </paper-card>
-
-    </div>
+    <paper-card heading="Listado de pesos" image="../images/signup-bk.jpg" class="white paperpad10">
+      <div class="cardLogin">
+        <lista-pesos id="listaPesos" pesos="[]">
+        </lista-pesos>
+      </div>
+    </paper-card>
     <paper-dialog id="papperDialog">
       <h2>Nuevo Pesaje</h2>
       <iron-form id="formPeso">
