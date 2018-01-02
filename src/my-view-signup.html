@@ -73,21 +73,26 @@
             paper-card.white {
                 --paper-card-header-color: white;
             }
+
+            date-picker.val {
+                --datetime-selected-background: var(--paper-red-500)
+            }
         </style>
+
         <paper-card heading="Signup" image="../images/signup-bk.jpg" class="white">
             <div class="cardLogin">
                 <paper-input required auto-validate error-message="Es necesario, complételo" label="Email" value="{{user.email}}">
                     <iron-icon icon="mail" slot="prefix"></iron-icon>
                     <div slot="suffix">@email.com</div>
                 </paper-input>
+
+                <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
+                
                 <p> </p>
 
                 <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
-
-                <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
-                <paper-input required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
-                    value="{{user.edad}}">
-                    <div slot="suffix">años</div>
+                
+                <paper-input type="date" required auto-validate error-message="Es necesario, complételo" label="Fecha de nacimiento" value="{{user.fnac}}">
                 </paper-input>
                 <paper-input required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate allowed-pattern="[0-9]"
                     value="{{user.altura}}">
@@ -112,6 +117,17 @@
                 </form>
             </iron-form>
         </paper-dialog>
+
+            <paper-dialog id="dlgFeNac">
+                <h2>Fecha incorrecta</h2>
+                <h0>Por favor, ingrese correctamente la fecha de nacimiento</h0>
+                <iron-form id="formPeso">
+                        <form action="/foo" method="get">
+                            <paper-button class="green" raised on-click="_cerrarPopupDlg">Ok</paper-button>
+                        </form>
+                    </iron-form>
+            </paper-dialog>
+    
 
         <iron-ajax id="ajaxsignup" method="POST" url="http://0.0.0.0:3000/api/clientes" params='' handle-as="json" on-response="respuestasignup"
             content-type="application/json" debounce-duration="300" on-error="_errorsignup"></iron-ajax>
@@ -143,7 +159,7 @@
                                 token: "",
                                 id: "",
                                 nombre: "",
-                                edad: "",
+                                fnac: "",
                                 altura: ""
                             }
                         }
@@ -161,7 +177,10 @@
                 this._toggleSexo();
                 console.log("ready");
                 // this.refresh();
+
             }
+
+
             _toggleSexo() {
                 if (this.sexoC == null) {
                     this.sexoC = false;
@@ -174,10 +193,12 @@
                 }
             }
             signup() {
+                var fechaMax = new Date().toJSON().slice(0,10);
+
                 this.$.ajaxsignup.body = JSON.stringify({
                     'email': this.user.email,
                     'password': this.user.password,
-                    'edad': this.user.edad,
+                    'fnac': this.user.fnac,
                     'altura': this.user.altura,
                     'sexo': this.sexoC,
                     'username': this.user.nombre
@@ -186,15 +207,20 @@
                 if (this.user.email <= "") {
                     return
                 };
-                if (this.user.password <= "") {
-                    return
-                };
                 if (this.user.nombre <= "") {
                     return
                 };
-                if (this.user.edad <= 0) {
+
+                console.log("Sel:" + this.user.fnac + " + Max:" + fechaMax  )
+             
+                if (this.user.fnac >= fechaMax) {
+                    this.$.dlgFeNac.open();
                     return
                 };
+                if (this.user.password <= "") {
+                    return
+                };
+
                 if (this.user.altura <= 0) {
                     return
                 };
@@ -227,6 +253,10 @@
             _cerrarPopup() {
                 this.$.papperDialog.close();
             }
+            _cerrarPopupDlg() {
+                this.$.dlgFeNac.close();
+            }
+
 
         }
 
