@@ -93,13 +93,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       paper-card {
         display: block;
-        width: 100%;
-        max-width: 800px;
+        width: 90%;
         margin: 0 auto;
       }
 
       paper-card.white {
         --paper-card-header-color: white;
+        --paper-card-header: {
+          background-color: #e65100;
+        }
+        ;
       }
 
       .im {
@@ -117,13 +120,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-    <paper-card heading="Evolución" image="../images/evolucion-bk.jpg" class="white">
+    <paper-card heading="Evolución" class="white">
       <google-chart id='googleChart' type='line' options='{"legend":"none"}' cols='[{"label":"Fecha", "type":"string"}, {"label":"Dias", "type":"number"}]'
         rows=[[arrayPesoChart]]>
       </google-chart>
     </paper-card>
-
-    <paper-card heading="Listado de pesos" image="../images/signup-bk.jpg" class="white paperpad10">
+    <paper-card heading="Listado de pesos" class="white paperpad10">
       <div class="cardLogin">
         <lista-pesos id="listaPesos" pesos="[]">
         </lista-pesos>
