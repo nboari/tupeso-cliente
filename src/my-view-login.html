@@ -14,8 +14,8 @@
 <dom-module id="my-view-login">
     <template>
         <style include="shared-styles">
-             :host {
-                display: block;
+            :host {
+                display:block;
                 padding: 10px;
             }
 
@@ -37,15 +37,22 @@
             }
 
             paper-card {
+                display: block;
+                width: 100%;
                 max-width: 500px;
+                margin: 0 auto;
             }
 
             paper-input {
-                max-width: 400px;
+                max-width: 450px;
                 margin: auto;
             }
 
             paper-button {
+                display:block;
+                max-width: 450px;
+                margin:10px auto 10px auto;
+                text-align: center;
                 font-family: 'Roboto', 'Noto', sans-serif;
                 font-weight: normal;
                 font-size: 14px;
@@ -68,6 +75,9 @@
             paper-card.white {
                 --paper-card-header-color: white;
             }
+            .cardLogin {
+                margin: 0 10px;
+            }
         </style>
 
         <paper-card heading="Login" image="../images/login-bk.jpg" class="white">
@@ -76,9 +86,7 @@
                     <iron-icon icon="mail" slot="prefix"></iron-icon>
                 </paper-input>
                 <paper-input type="password" label="password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
-                <p> </p>
                 <paper-button on-tap="loguearse" raised class="green">Ingresar</paper-button>
-
             </div>
         </paper-card>
 
@@ -139,15 +147,12 @@
                     'email': this.user.email,
                     'password': this.user.password
                 });
-
                 this.$.ajaxlogin.generateRequest();
             }
             respuestalogin(res) {
-
                 console.log(res);
                 this.user.id = res.detail.__data.response.userId;
                 this.user.token = res.detail.__data.response.id;
-
                 localStorage.setItem("usr", this.user.email);
                 localStorage.setItem("token", this.user.token);
                 localStorage.setItem("usrId", this.user.id);

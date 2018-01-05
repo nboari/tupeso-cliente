@@ -38,11 +38,15 @@
             }
 
             paper-input {
-                max-width: 400px;
+                max-width: 450px;
                 margin: auto;
             }
 
             paper-button {
+                display:block;
+                max-width: 450px;
+                margin:10px auto 10px auto;
+                text-align: center;
                 font-family: 'Roboto', 'Noto', sans-serif;
                 font-weight: normal;
                 font-size: 14px;
@@ -71,8 +75,20 @@
                 --paper-toggle-button-unchecked-ink-color: var(--paper-indigo-900);
             }
 
+            paper-toggle-button {
+                max-width: 450px;
+                margin: 40px auto 0 auto;
+            }
+
             paper-card.white {
                 --paper-card-header-color: white;
+            }
+
+            paper-card {
+                display: block;
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
             }
         </style>
         <paper-card heading="Usuario" image="../images/signup-bk.jpg" class="white">

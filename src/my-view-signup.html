@@ -15,7 +15,7 @@
     <template>
         <style include="shared-styles">
              :host {
-                display: block;
+                display:block;
                 padding: 10px;
             }
 
@@ -37,11 +37,15 @@
             }
 
             paper-input {
-                max-width: 400px;
+                max-width: 450px;
                 margin: auto;
             }
 
             paper-button {
+                display:block;
+                max-width: 450px;
+                margin:0 auto 10px auto;
+                text-align: center;
                 font-family: 'Roboto', 'Noto', sans-serif;
                 font-weight: normal;
                 font-size: 14px;
@@ -74,17 +78,32 @@
                 --paper-card-header-color: white;
             }
 
+            paper-card {
+                display: block;
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            paper-toggle-button {
+                max-width: 450px;
+                margin: 40px auto 0 auto;
+            }
+
+            .cardLogin {
+                margin: 0 10px;
+            }
             date-picker.val {
                 --datetime-selected-background: var(--paper-red-500)
             }
         </style>
-
-        <paper-card heading="Signup" image="../images/signup-bk.jpg" class="white">
+        <paper-card heading="Signup" image="../images/login-bk.jpg" class="white">
             <div class="cardLogin">
                 <paper-input required auto-validate error-message="Es necesario, complételo" label="Email" value="{{user.email}}">
                     <iron-icon icon="mail" slot="prefix"></iron-icon>
                     <div slot="suffix">@email.com</div>
                 </paper-input>
+<<<<<<< HEAD
 
                 <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
                 
@@ -93,6 +112,13 @@
                 <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
                 
                 <paper-input type="date" required auto-validate error-message="Es necesario, complételo" label="Fecha de nacimiento" value="{{user.fnac}}">
+=======
+                <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
+                <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
+                <paper-input required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
+                    value="{{user.edad}}">
+                    <div slot="suffix">años</div>
+>>>>>>> feature/publicidad
                 </paper-input>
                 <paper-input required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate allowed-pattern="[0-9]"
                     value="{{user.altura}}">
@@ -104,7 +130,6 @@
                     value="{{user.password2}}"></paper-input>
                 <p> </p>
                 <paper-button on-tap="signup" raised class="green">Registrarse</paper-button>
-
             </div>
         </paper-card>
 
