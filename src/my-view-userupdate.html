@@ -38,11 +38,15 @@
             }
 
             paper-input {
-                max-width: 400px;
+                max-width: 450px;
                 margin: auto;
             }
 
             paper-button {
+                display:block;
+                max-width: 450px;
+                margin:10px auto 10px auto;
+                text-align: center;
                 font-family: 'Roboto', 'Noto', sans-serif;
                 font-weight: normal;
                 font-size: 14px;
@@ -71,8 +75,20 @@
                 --paper-toggle-button-unchecked-ink-color: var(--paper-indigo-900);
             }
 
+            paper-toggle-button {
+                max-width: 450px;
+                margin: 40px auto 0 auto;
+            }
+
             paper-card.white {
                 --paper-card-header-color: white;
+            }
+
+            paper-card {
+                display: block;
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
             }
         </style>
         <paper-card heading="Usuario" image="../images/signup-bk.jpg" class="white">
@@ -82,10 +98,10 @@
                 </paper-input>
                 <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
                 <paper-input id="inputNombre" required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
-                <paper-input id="inputEdad" required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
-                    value="{{user.edad}}">
-                    <div slot="suffix">años</div>
+                <paper-input id="inputFnac" required auto-validate error-message="Es necesario, complételo" label="Fecha de nacimiento" 
+                    value="{{user.fnac}}" type="date">
                 </paper-input>
+
                 <paper-input id="inputAltura" required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate
                     allowed-pattern="[0-9]" value="{{user.altura}}">
                     <div slot="suffix">cm</div>
@@ -141,7 +157,7 @@
                                 token: "",
                                 id: "",
                                 nombre: "",
-                                edad: "",
+                                fnac: "",
                                 altura: ""
                             }
                         }
@@ -195,12 +211,12 @@
                 this.user.email = response.email;
                 this.user.nombre = response.username;
                 this.user.altura = response.altura;
-                this.user.edad = response.edad;
+                this.user.fnac = response.fnac;
                 this.user.password = "";
                 this.user.password2 = "";
                 console.log(this.user);
                 this.$.inputEmail.value = this.user.email;
-                this.$.inputEdad.value = this.user.edad;
+                this.$.inputFnac.value = this.user.fnac.slice(0,10);
                 this.$.inputNombre.value = this.user.nombre;
                 this.$.inputAltura.value = this.user.altura;
                 this.$.inputPass1.value = "";
@@ -210,14 +226,17 @@
                 };
                 this.sexoC = response.sexo;
                 this._toggleSexo();
+                console.log("Fnac:"+this.$.inputFnac.value)
             }
 
 
             modificar() {
+                var fechaMax = new Date().toJSON().slice(0,10);
+
                 this.$.AjaxModifica.body = JSON.stringify({
                     'password': this.user.password,
                     'email': this.user.email,
-                    'edad': this.user.edad,
+                    'fnac': this.user.fnac,
                     'sexo': this.sexoC,
                     'username': this.user.nombre,
                     'altura': this.user.altura
@@ -226,13 +245,17 @@
                 if (this.user.email <= "") {
                     return
                 };
+                console.log("Sel:" + this.user.fnac + " + Max:" + fechaMax  )
+             
+                if (this.user.fnac >= fechaMax) {
+                    this.$.dlgFeNac.open();
+                    return
+                };
+
                 if (this.user.password <= "") {
                     return
                 };
                 if (this.user.nombre <= "") {
-                    return
-                };
-                if (this.user.edad <= 0) {
                     return
                 };
                 if (this.user.altura <= 0) {
