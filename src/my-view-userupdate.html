@@ -189,7 +189,7 @@
                 this.sexoC = false;
             }
             refresh() {
-                this.$.AjaxGet.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
+                this.$.AjaxGet.url = "https://tupeso-server.herokuapp.com/api/clientes/" + localStorage.getItem("usrId") +
                     "?access_token=" + localStorage.getItem("token");
                 this.$.AjaxGet.generateRequest();
             }
@@ -264,7 +264,7 @@
                 if (this.user.password != this.user.password2) {
                     return
                 }
-                this.$.AjaxModifica.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
+                this.$.AjaxModifica.url = "https://tupeso-server.herokuapp.com/api/clientes/" + localStorage.getItem("usrId") +
                     "/replace?access_token=" + localStorage.getItem("token");
                 this.$.AjaxModifica.generateRequest();
             }
