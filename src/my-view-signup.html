@@ -103,23 +103,9 @@
                     <iron-icon icon="mail" slot="prefix"></iron-icon>
                     <div slot="suffix">@email.com</div>
                 </paper-input>
-<<<<<<< HEAD
-
                 <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
-                
-                <p> </p>
-
                 <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
-                
-                <paper-input type="date" required auto-validate error-message="Es necesario, complételo" label="Fecha de nacimiento" value="{{user.fnac}}">
-=======
-                <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
-                <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
-                <paper-input required auto-validate error-message="Es necesario, complételo" label="Edad" auto-validate allowed-pattern="[0-9]"
-                    value="{{user.edad}}">
-                    <div slot="suffix">años</div>
->>>>>>> feature/publicidad
-                </paper-input>
+                <paper-input type="date" required auto-validate error-message="Es necesario, complételo" label="Fecha de nacimiento" value="{{user.fnac}}"></paper-input>
                 <paper-input required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate allowed-pattern="[0-9]"
                     value="{{user.altura}}">
                     <div slot="suffix">cm</div>
@@ -128,7 +114,6 @@
                 <paper-input type="password" label="Password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
                 <paper-input type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
                     value="{{user.password2}}"></paper-input>
-                <p> </p>
                 <paper-button on-tap="signup" raised class="green">Registrarse</paper-button>
             </div>
         </paper-card>
