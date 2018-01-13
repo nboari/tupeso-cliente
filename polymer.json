@@ -3,6 +3,9 @@
   "shell": "src/my-app.html",
   "fragments": [
     "src/my-view-historia.html",
+    "src/my-view-login.html",
+    "src/my-view-signup.html",
+    "src/my-view-userupdate.html",  
     "src/my-view-404.html"
   ],
   "sources": [
@@ -16,7 +19,12 @@
   "lint": {
     "rules": ["polymer-2-hybrid"]
   },
-  "builds": [
-    { "preset": "es5-bundled" }
-  ]
+  "builds": [{
+    "addServiceWorker": true,
+    "bundle": false,
+    "js": {"compile": true, "minify": false},
+    "css": {"minify": true},
+    "html": {"minify": true},
+    "env": {"NODE_ENV" : "production"}
+  }]
 }

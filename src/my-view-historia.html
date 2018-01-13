@@ -188,9 +188,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.listaPesos.pesos = [];
       }
       refresh() {
-        this.$.AjaxGet.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
+        this.$.AjaxGet.url = "https://tupeso-server.herokuapp.com/api/clientes/" + localStorage.getItem("usrId") +
           "/pesos?access_token=" + localStorage.getItem("token");
-        this.$.AjaxGetDesc.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
+        this.$.AjaxGetDesc.url = "https://tupeso-server.herokuapp.com/api/clientes/" + localStorage.getItem("usrId") +
           "/pesos?filter=%7B%22order%22%3A%20%22fecha%20DESC%22%7D" + "&access_token=" + localStorage.getItem(
             "token");
         this.$.AjaxGet.generateRequest();
@@ -213,7 +213,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       eliminarPeso(e) {
         var peso = JSON.parse(e.detail.peso);
-        this.$.AjaxDelete.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") + "/pesos/" +
+        this.$.AjaxDelete.url = "https://tupeso-server.herokuapp.com/api/clientes/" + localStorage.getItem("usrId") + "/pesos/" +
           peso.id + "?access_token=" + localStorage.getItem("token")
         this.$.AjaxDelete.generateRequest();
       }
@@ -225,7 +225,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           "peso": this.$.peso.value,
           "fecha": Date()
         };
-        this.$.AjaxPost.url = "http://0.0.0.0:3000/api/clientes/" + localStorage.getItem("usrId") +
+        this.$.AjaxPost.url = "https://tupeso-server.herokuapp.com/api/clientes/" + localStorage.getItem("usrId") +
           "/pesos?access_token=" + localStorage.getItem("token")
         this.$.AjaxPost.generateRequest();
         this.$.papperDialog.close();
