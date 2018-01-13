@@ -43,9 +43,9 @@
             }
 
             paper-button {
-                display:block;
+                display: block;
                 max-width: 450px;
-                margin:10px auto 10px auto;
+                margin: 10px auto 10px auto;
                 text-align: center;
                 font-family: 'Roboto', 'Noto', sans-serif;
                 font-weight: normal;
@@ -98,8 +98,8 @@
                 </paper-input>
                 <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
                 <paper-input id="inputNombre" required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
-                <paper-input id="inputFnac" required auto-validate error-message="Es necesario, complételo" label="Fecha de nacimiento" 
-                    value="{{user.fnac}}" type="date">
+                <paper-input id="inputFnac" required auto-validate error-message="Es necesario, complételo" label="Fecha de nacimiento" value="{{user.fnac}}"
+                    type="date">
                 </paper-input>
 
                 <paper-input id="inputAltura" required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate
@@ -107,12 +107,23 @@
                     <div slot="suffix">cm</div>
                 </paper-input>
                 <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
-                <paper-input id="inputPass1" type="password" label="Nueva password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
-                <paper-input id="inputPass2" type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
-                    value="{{user.password2}}"></paper-input>
+
+                <div hidden$="[[SwPass]]">
+                    <paper-input id="inputPass" type="password" label="Password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+                </div>
+                <div hidden$="[[!SwPass]]">
+                    <paper-input id="inputPass1" type="password" label="Nueva password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
+                    <paper-input id="inputPass2" type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
+                        value="{{user.password2}}"></paper-input>
+                </div>
                 <p> </p>
-                <paper-button on-tap="modificar" raised class="green">Modificar</paper-button>
+                <paper-button on-tap="modificar" raised class="green">Actualizar</paper-button>
+                <div hidden$="[[SwPass]]">
+                   <paper-button on-tap="modificarP" raised class="green">Modificar password</paper-button>
+                </div>
             </div>
+
+
         </paper-card>
 
         <paper-dialog id="papperDialog">
@@ -131,12 +142,28 @@
         <iron-ajax id="AjaxGet" on-response="handleAjaxGetResponse" on-error="handleAjaxGetError">
         </iron-ajax>
 
+        <iron-ajax id="ajaxlogin" method="POST" url="https://tupeso-server.herokuapp.com/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
+            content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
+
         <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
         </app-location>
 
 
         <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}">
         </app-route>
+
+        <paper-dialog id="papperDialog">
+            <h2>Password incorrecta</h2>
+            <h0>Introduzca su password actual para confirmar la modificación</h0>
+            <iron-form id="formPeso">
+                <form action="/foo" method="get">
+                    <paper-button class="green" raised on-click="_cerrarPopup">Ok</paper-button>
+                </form>
+            </iron-form>
+        </paper-dialog>
+
+
+
     </template>
 
     <script>
@@ -177,11 +204,13 @@
             }
             ready() {
                 super.ready();
+                this.SwPass = false;
                 console.log("ready");
                 // this.refresh();
             }
             loggedChanged() {
                 console.log("loginUP");
+                this.SwPass = false;
                 this.refresh();
             }
             limpiarHistoria() {
@@ -216,24 +245,33 @@
                 this.user.password2 = "";
                 console.log(this.user);
                 this.$.inputEmail.value = this.user.email;
-                var nac = this.user.fnac.toString().substr(0,10);
+                var nac = this.user.fnac.toString().substr(0, 10);
                 this.$.inputFnac.value = nac;
                 this.$.inputNombre.value = this.user.nombre;
                 this.$.inputAltura.value = this.user.altura;
                 this.$.inputPass1.value = "";
                 this.$.inputPass2.value = "";
+                this.$.inputPass.value = "";
+
                 if (response.sexo == null) {
                     response.sexo = false
                 };
                 this.sexoC = response.sexo;
                 this._toggleSexo();
-                console.log("Fnac:"+this.$.inputFnac.value)
+                console.log("Fnac:" + this.$.inputFnac.value)
+            }
+
+            modificarP() {
+                this.SwPass = true;
+                this.$.inputPass.value = "";
+                this.$.inputPass1.value = "";
+                this.$.inputPass2.value = "";
+
             }
 
 
             modificar() {
-                var fechaMax = new Date().toJSON().slice(0,10);
-
+                var fechaMax = new Date().toJSON().slice(0, 10);
                 this.$.AjaxModifica.body = JSON.stringify({
                     'password': this.user.password,
                     'email': this.user.email,
@@ -246,30 +284,78 @@
                 if (this.user.email <= "") {
                     return
                 };
-                console.log("Sel:" + this.user.fnac + " + Max:" + fechaMax  )
-             
+                console.log("Sel:" + this.user.fnac + " + Max:" + fechaMax)
+
                 if (this.user.fnac >= fechaMax) {
                     this.$.dlgFeNac.open();
                     return
                 };
 
-                if (this.user.password <= "") {
-                    return
-                };
                 if (this.user.nombre <= "") {
                     return
                 };
                 if (this.user.altura <= 0) {
                     return
                 };
-                if (this.user.password != this.user.password2) {
-                    return
-                }
-                this.$.AjaxModifica.url = "https://tupeso-server.herokuapp.com/api/clientes/" + localStorage.getItem("usrId") +
-                    "/replace?access_token=" + localStorage.getItem("token");
-                this.$.AjaxModifica.generateRequest();
-            }
+                if (this.SwPass) {
+                    if (this.user.password <= "") {
+                        return
+                    };
+                    if (this.user.password != this.user.password2) {
+                        return
+                    }
 
+                    this.$.AjaxModifica.url = "https://tupeso-server.herokuapp.com/api/clientes/" + localStorage.getItem(
+                            "usrId") +
+                        "/replace?access_token=" + localStorage.getItem("token");
+                    this.$.AjaxModifica.generateRequest();
+                    this.SwPass = false;
+
+                } else {
+
+                    this.user.password = this.$.inputPass.value
+                    this.$.ajaxlogin.body = JSON.stringify({
+                        'email': this.user.email,
+                        'password': this.user.password
+                    });
+                    this.$.ajaxlogin.generateRequest();
+                }
+            }
+            respuestalogin(res) {
+                console.log(res);
+                this.user.id = res.detail.__data.response.userId;
+                this.user.token = res.detail.__data.response.id;
+                localStorage.setItem("usr", this.user.email);
+                localStorage.setItem("token", this.user.token);
+                localStorage.setItem("usrId", this.user.id);
+                localStorage.setItem("usrN", null);
+                localStorage.setItem("usrLog", "true");
+                this.dispatch({
+                    type: 'LOGIN'
+                });
+
+                var fechaMax = new Date().toJSON().slice(0, 10);
+                this.$.AjaxModifica.body = JSON.stringify({
+                    'password': this.user.password,
+                    'email': this.user.email,
+                    'fnac': this.user.fnac,
+                    'sexo': this.sexoC,
+                    'username': this.user.nombre,
+                    'altura': this.user.altura
+                });
+
+                this.$.AjaxModifica.url = "https://tupeso-server.herokuapp.com/api/clientes/" + localStorage.getItem(
+                            "usrId") +
+                        "/replace?access_token=" + localStorage.getItem("token");
+                this.$.AjaxModifica.generateRequest();
+
+            }
+            _errorLogin() {
+                this.$.papperDialog.open();
+            }
+            _cerrarPopup() {
+                this.$.papperDialog.close();
+            }
             _passValChange() {
                 console.log(this.user.password2);
                 console.log(this.user.password);
