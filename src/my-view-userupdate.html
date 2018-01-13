@@ -216,7 +216,8 @@
                 this.user.password2 = "";
                 console.log(this.user);
                 this.$.inputEmail.value = this.user.email;
-                this.$.inputFnac.value = this.user.fnac.slice(0,10);
+                var nac = this.user.fnac.toString().substr(0,10);
+                this.$.inputFnac.value = nac;
                 this.$.inputNombre.value = this.user.nombre;
                 this.$.inputAltura.value = this.user.altura;
                 this.$.inputPass1.value = "";
