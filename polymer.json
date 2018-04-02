@@ -20,6 +20,7 @@
     "rules": ["polymer-2-hybrid"]
   },
   "builds": [{
+    "name": "polymer",
     "addServiceWorker": true,
     "bundle": false,
     "js": {"compile": true, "minify": false},
