@@ -15,7 +15,7 @@
     <template>
         <style include="shared-styles">
             :host {
-                display:block;
+                display: block;
                 padding: 10px;
             }
 
@@ -49,9 +49,9 @@
             }
 
             paper-button {
-                display:block;
+                display: block;
                 max-width: 450px;
-                margin:10px auto 10px auto;
+                margin: 10px auto 10px auto;
                 text-align: center;
                 font-family: 'Roboto', 'Noto', sans-serif;
                 font-weight: normal;
@@ -60,7 +60,7 @@
             }
 
             paper-button.green {
-                background-color: #ff6f00;
+                background-color: black;
                 color: white;
             }
 
@@ -75,6 +75,7 @@
             paper-card.white {
                 --paper-card-header-color: white;
             }
+
             .cardLogin {
                 margin: 0 10px;
             }
@@ -82,11 +83,11 @@
 
         <paper-card heading="Login" image="images/login-bk.jpg" class="white">
             <div class="cardLogin">
-                <paper-input required auto-validate error-message="Es necesario, complételo" label="email" value="{{user.email}}">
+                <paper-input id="emailInput" required type="email" error-message="Es necesario, complételo" label="email" value="{{user.email}}">
                     <iron-icon icon="mail" slot="prefix"></iron-icon>
                 </paper-input>
-                <paper-input type="password" label="password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
-                <paper-button on-tap="loguearse" raised class="green">Ingresar</paper-button>
+                <paper-input id="pswInput" type="password" label="password" value="{{user.password}}" required error-message="Es necesario, complételo"></paper-input>
+                <paper-button id="logButton" on-tap="loguearse" raised class="green">Ingresar</paper-button>
             </div>
         </paper-card>
 
@@ -100,8 +101,8 @@
             </iron-form>
         </paper-dialog>
 
-        <iron-ajax id="ajaxlogin" method="POST" url="https://tupeso-server.herokuapp.com/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
-            content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
+        <iron-ajax id="ajaxlogin" method="POST" url="https://tupeso-server.herokuapp.com/api/clientes/login" params='' handle-as="json"
+            on-response="respuestalogin" content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
         <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
         </app-location>
 
@@ -143,6 +144,9 @@
                 }
             }
             loguearse() {
+                if (!this.$.emailInput.validate() || !this.$.pswInput.validate()) {
+                    return;
+                }
                 this.$.ajaxlogin.body = JSON.stringify({
                     'email': this.user.email,
                     'password': this.user.password
@@ -181,10 +185,9 @@
                 localStorage.setItem("usrId", null);
                 localStorage.setItem("usrN", null);
                 console.log("paso");
+                window.addEventListener('keydown', e => (e.keyCode == 13) ? this.$.logButton.click() : nothing);
             }
-
         }
-
         window.customElements.define(MyViewLogin.is, MyViewLogin);
     </script>
 </dom-module>

@@ -46,7 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       paper-fab {
         display: block;
         float: right;
-        --paper-fab-background: #e65100;
+        --paper-fab-background: black;
       }
 
       .item {
@@ -75,16 +75,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       paper-button.indigo {
-        background-color: #ff6f00;
+        background-color: black;
         color: white;
         --paper-button-raised-keyboard-focus: {
-          background-color: #e65100 !important;
+          background-color: black !important;
           color: white !important;
         }
       }
 
       paper-button.indigo:hover {
-        background-color: #e65100;
+        background-color: black;
       }
 
       h1 {
@@ -101,7 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       paper-card.white {
         --paper-card-header-color: white;
         --paper-card-header: {
-          background-color: #e65100;
+          background-color: black;
         }
         ;
       }
@@ -136,7 +136,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <h2>Nuevo Pesaje</h2>
       <iron-form id="formPeso">
         <form action="/foo" method="get">
-          <paper-input autofocus id="peso" name="peso" label="Peso" value="" auto-validate allowed-pattern="[0-9.]" required></paper-input>
+          <paper-input autofocus id="peso" name="peso" label="Peso" value="" allowed-pattern="[0-9.]{1,3}" required></paper-input>
           <paper-button class="indigo" raised on-click="submitForm">Enviar</paper-button>
           <paper-button class="indigo" raised on-click="resetForm">Limpiar</paper-button>
         </form>
@@ -156,7 +156,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       on-error="handleAjaxDeleteError" />
     </iron-ajax>
     <iron-resizable-behavior></iron-resizable-behavior>
-  </template>
+</template>
 
   <script>
     class MyViewHistoria extends ReduxMixin(Polymer.mixinBehaviors(Polymer.IronResizableBehavior, Polymer.Element)) {
@@ -221,6 +221,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         console.log(this);
       }
       submitForm() {
+        if (!this.$.peso.validate()) {
+          return ;
+        }
+        if (!(this.$.peso.value > 0 && this.$.peso.value < 500)) {
+          alert("Peso invalido")  
+          return ;
+        }
         this.$.AjaxPost.body = {
           "peso": this.$.peso.value,
           "fecha": Date()
