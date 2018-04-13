@@ -9,13 +9,14 @@
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="modulos/match-passwords-validator.html">
+<link rel="import" href="redux/redux-mixin.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view-signup">
     <template>
         <style include="shared-styles">
-             :host {
-                display:block;
+            :host {
+                display: block;
                 padding: 10px;
             }
 
@@ -36,15 +37,19 @@
                 margin: 0px;
             }
 
+            .green {
+                margin-top: 15px;
+            }
+
             paper-input {
                 max-width: 450px;
                 margin: auto;
             }
 
             paper-button {
-                display:block;
+                display: block;
                 max-width: 450px;
-                margin:0 auto 10px auto;
+                margin: 0 auto 10px auto;
                 text-align: center;
                 font-family: 'Roboto', 'Noto', sans-serif;
                 font-weight: normal;
@@ -53,7 +58,7 @@
             }
 
             paper-button.green {
-                background-color:black;
+                background-color: black;
                 color: white;
             }
 
@@ -93,28 +98,28 @@
             .cardLogin {
                 margin: 0 10px;
             }
+
             date-picker.val {
                 --datetime-selected-background: var(--paper-red-500)
             }
         </style>
         <paper-card heading="Signup" image="images/login-bk.jpg" class="white">
             <div class="cardLogin">
-                <paper-input required auto-validate error-message="Es necesario, complételo" label="Email" value="{{user.email}}">
+                <paper-input id="emailInput" required error-message="Es necesario, complételo" label="Email" value="{{user.email}}">
                     <iron-icon icon="mail" slot="prefix"></iron-icon>
                     <div slot="suffix">@email.com</div>
                 </paper-input>
-                <paper-input required auto-validate error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
+                <paper-input id="nombreInput" required error-message="Es necesario, complételo" label="Nombre" value="{{user.nombre}}"></paper-input>
                 <paper-toggle-button checked="{{sexoC}}" on-change="_toggleSexo" class="pink">{{sexo}}</paper-toggle-button>
-                <paper-input type="date" required auto-validate error-message="Es necesario, complételo" label="Fecha de nacimiento" value="{{user.fnac}}"></paper-input>
-                <paper-input required auto-validate error-message="Es necesario, complételo" label="Altura" auto-validate allowed-pattern="[0-9]"
-                    value="{{user.altura}}">
+                <paper-input id="fecNacInput" type="date" required error-message="Es necesario, complételo" label="Fecha de nacimiento" value="{{user.fnac}}"></paper-input>
+                <paper-input id="alturaInput" required error-message="Es necesario, complételo" label="Altura" allowed-pattern="[0-9]" value="{{user.altura}}">
                     <div slot="suffix">cm</div>
                 </paper-input>
                 <match-passwords-validator id="match-passwords-validator" password="[[user.password]]"></match-passwords-validator>
-                <paper-input type="password" label="Password" value="{{user.password}}" required auto-validate error-message="Es necesario, complételo"></paper-input>
-                <paper-input type="password" label="Confirmar" auto-validate validator="match-passwords-validator" error-message="Es necesario que sean iguales"
+                <paper-input id="psw1Input" type="password" label="Password" value="{{user.password}}" required error-message="Es necesario, complételo"></paper-input>
+                <paper-input id="psw2Input" type="password" required label="Confirmar" validator="match-passwords-validator" error-message="Es necesario que sean iguales"
                     value="{{user.password2}}"></paper-input>
-                <paper-button on-tap="signup" raised class="green">Registrarse</paper-button>
+                <paper-button on-click="signup" raised class="green">Registrarse</paper-button>
             </div>
         </paper-card>
 
@@ -128,31 +133,30 @@
             </iron-form>
         </paper-dialog>
 
-            <paper-dialog id="dlgFeNac">
-                <h2>Fecha incorrecta</h2>
-                <h0>Por favor, ingrese correctamente la fecha de nacimiento</h0>
-                <iron-form id="formPeso">
-                        <form action="/foo" method="get">
-                            <paper-button class="green" raised on-click="_cerrarPopupDlg">Ok</paper-button>
-                        </form>
-                    </iron-form>
-            </paper-dialog>
-    
+        <paper-dialog id="dlgFeNac">
+            <h2>Fecha incorrecta</h2>
+            <h0>Por favor, ingrese correctamente la fecha de nacimiento</h0>
+            <iron-form id="formPeso">
+                <form action="/foo" method="get">
+                    <paper-button class="green" raised on-click="_cerrarPopupDlg">Ok</paper-button>
+                </form>
+            </iron-form>
+        </paper-dialog>
 
-        <iron-ajax id="ajaxsignup" method="POST" url="https://tupeso-server.herokuapp.com/api/clientes" params='' handle-as="json" on-response="respuestasignup"
-            content-type="application/json" debounce-duration="300" on-error="_errorsignup"></iron-ajax>
-        <iron-ajax id="ajaxlogin" method="POST" url="https://tupeso-server.herokuapp.com/api/clientes/login" params='' handle-as="json" on-response="respuestalogin"
-            content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
+        <iron-ajax id="ajaxsignup" method="POST" url="https://tupeso-server.herokuapp.com/api/clientes" params='' handle-as="json"
+            on-response="respuestasignup" content-type="application/json" debounce-duration="300" on-error="_errorsignup"></iron-ajax>
+        <iron-ajax id="ajaxlogin" method="POST" url="https://tupeso-server.herokuapp.com/api/clientes/login" params='' handle-as="json"
+            on-response="respuestalogin" content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
         <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
         </app-location>
-
+        
 
         <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}">
         </app-route>
     </template>
 
     <script>
-        class MyViewSignup extends Polymer.Element {
+        class MyViewSignup extends ReduxMixin(Polymer.Element) {
             static get is() {
                 return 'my-view-signup';
             }
@@ -189,7 +193,7 @@
                 // this.refresh();
 
             }
-            
+
 
             _toggleSexo() {
                 if (this.sexoC == null) {
@@ -203,7 +207,26 @@
                 }
             }
             signup() {
-                var fechaMax = new Date().toJSON().slice(0,10);
+                if (!this.$.emailInput.validate()) {
+                    return
+                }
+                if (!this.$.nombreInput.validate()) {
+                    return
+                }
+                if (!this.$.fecNacInput.validate()) {
+                    return
+                }
+                if (!this.$.alturaInput.validate()) {
+                    return
+                }
+                if (!this.$.psw1Input.validate()) {
+                    return
+                }
+                if (!this.$.psw2Input.validate()) {
+                    return
+                }
+
+                var fechaMax = new Date().toJSON().slice(0, 10);
 
                 this.$.ajaxsignup.body = JSON.stringify({
                     'email': this.user.email,
@@ -213,16 +236,8 @@
                     'sexo': this.sexoC,
                     'username': this.user.nombre
                 });
+                console.log("Sel:" + this.user.fnac + " + Max:" + fechaMax)
 
-                if (this.user.email <= "") {
-                    return
-                };
-                if (this.user.nombre <= "") {
-                    return
-                };
-
-                console.log("Sel:" + this.user.fnac + " + Max:" + fechaMax  )
-             
                 if (this.user.fnac >= fechaMax) {
                     this.$.dlgFeNac.open();
                     return
@@ -237,7 +252,6 @@
                 if (this.user.password != this.user.password2) {
                     return
                 }
-
                 this.$.ajaxsignup.generateRequest();
             }
 
@@ -251,12 +265,20 @@
                 console.log(this.passVal);
             }
 
-
             respuestasignup(res) {
+                this.$.emailInput = ""
+                this.$.nombreInput = ""
+                this.$.fecNacInput = ""
+                this.$.alturaInput = ""
+                this.$.psw1Input = ""
+                this.$.psw2Input = ""
+                this.dispatch({
+                    type: 'SINGUP'
+                });
                 this.set('route.path', '/');
                 this.set('routeData.page', 'login');
             }
-
+            
             _errorsignup() {
                 this.$.papperDialog.open();
             }
@@ -266,8 +288,6 @@
             _cerrarPopupDlg() {
                 this.$.dlgFeNac.close();
             }
-
-
         }
 
         window.customElements.define(MyViewSignup.is, MyViewSignup);

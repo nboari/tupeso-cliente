@@ -6,6 +6,13 @@
   // const reducer = state => state;
   const reducer = (state, action) => {
     switch (action.type) {
+      case 'SINGUP':
+        // ALWAYS return new state
+        console.log("Entro a estado SINGUP");
+        return Object.assign({}, state, {
+          
+          singedUp: true 
+        });
       case 'LOGIN':
         // ALWAYS return new state
         return Object.assign({}, state, {

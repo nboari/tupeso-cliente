@@ -101,6 +101,16 @@
             </iron-form>
         </paper-dialog>
 
+        <paper-dialog id="papperDialogOk">
+            <h2>Alta de usuario exitosa</h2>
+            <h0>Ahora puede ingresar al sistema</h0>
+            <iron-form id="formPeso">
+                <form action="/foo" method="get">
+                    <paper-button class="green" raised on-click="_cerrarPopupOk">Ok</paper-button>
+                </form>
+            </iron-form>
+        </paper-dialog>
+
         <iron-ajax id="ajaxlogin" method="POST" url="https://tupeso-server.herokuapp.com/api/clientes/login" params='' handle-as="json"
             on-response="respuestalogin" content-type="application/json" debounce-duration="300" on-error="_errorLogin"></iron-ajax>
         <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
@@ -139,13 +149,27 @@
                         value: function () {
                             return location.hostname
                         }
+                    },
+                    singedup: {
+                        type: String,
+                        statePath: 'singedUp',
+                        observer: 'singedupChanged'
                     }
+                }
+            }
 
+            singedupChanged() {
+                console.log("SingUp Cambiado " + this.singedup)
+                if (this.singedup) {
+                    this.$.papperDialogOk.open();
                 }
             }
             loguearse() {
-                if (!this.$.emailInput.validate() || !this.$.pswInput.validate()) {
-                    return;
+                if (!this.$.emailInput.validate()) {
+                    return
+                }
+                if (!this.$.pswInput.validate()) {
+                    return
                 }
                 this.$.ajaxlogin.body = JSON.stringify({
                     'email': this.user.email,
@@ -165,6 +189,8 @@
                 this.dispatch({
                     type: 'LOGIN'
                 });
+                this.$.emailInput = ""
+                this.$.pswInput = ""
                 this.set('route.path', '/');
                 this.set('routeData.page', 'historia');
             }
@@ -173,6 +199,9 @@
             }
             _cerrarPopup() {
                 this.$.papperDialog.close();
+            }
+            _cerrarPopupOk() {
+                this.$.papperDialogOk.close();
             }
             ready() {
                 super.ready();
@@ -185,7 +214,7 @@
                 localStorage.setItem("usrId", null);
                 localStorage.setItem("usrN", null);
                 console.log("paso");
-                window.addEventListener('keydown', e => (e.keyCode == 13) ? this.$.logButton.click() : nothing);
+                window.addEventListener('keydown', e => (e.keyCode == 13) ? this.$.logButton.click() : "");
             }
         }
         window.customElements.define(MyViewLogin.is, MyViewLogin);
